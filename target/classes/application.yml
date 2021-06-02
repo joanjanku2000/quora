@@ -1,0 +1,54 @@
+spring:
+  datasource:
+    password: 9649a8ea451d4ae3fbcdcd7fee278cee89a89c0ffef59de03e2e4d5837f2dd1b
+    url: jdbc:postgresql://ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/dcrf5fkmekslr0
+    username: ttsebsphsevlgl
+    platform: POSTGRESQL
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 658706661281-m6jlt4njur0a5ivaj7eflm4kk0qo2pit.apps.googleusercontent.com
+            clientSecret: eSuwAWMzpBU2rnM24I0qo_AO
+            scope:
+                - email
+                - profile
+          facebook:
+            clientId: 1948753795290458
+            clientSecret: a6bded606956a843b0460e99409421fe
+            scope:
+              - email
+              - public_profile
+#            scope:
+#            - https://www.googleapis.com/auth/user.gender.read
+#            - https://www.googleapis.com/auth/user.birthday.read
+#            - https://www.googleapis.com/auth/userinfo.profile
+#              - email
+#              - profile
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  logging:
+    file:
+      logs/app.log
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled:false
+server:
+  port: 8081
+  error:
+    include-message: always
+
+#jwt:
+#  secret: secret
+#  clockSkew: 10
+#  validFor: 36000
+
+
+

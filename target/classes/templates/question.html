@@ -1,0 +1,272 @@
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href=" https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+          crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles/profile.css">
+  <style>
+    hr {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      border: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    span{
+      font-family: "Microsoft YaHei UI Light";
+      font-size: small;
+    }
+    #replies{
+      border: 1px dot-dash royalblue;
+      border-radius: 1rem;
+    }
+  </style>
+  <script th:inline="javascript" >
+    function postReply(){
+      var replyRequest = {};
+      replyRequest.reply = $('#reply').val();
+      /*<![CDATA[*/
+      let userId = /*[[${user.id}]]*/'default';
+      let questionId = /*[[${questionDto.id}]]*/'default';
+      /*]]>*/
+      let currentUrlString = window.location.href;
+      let currentUrl = new URL(currentUrlString);
+      let pageSize =  10;
+      if (currentUrlString.indexOf("pageSize")>-1)
+      {
+        pageSize = currentUrl.searchParams.get("pageSize");
+
+      }
+      let pageNumber = currentUrl.searchParams.get("pageNumber");
+      var settings = {
+        beforeSend: function(xhr,options)
+        {
+          xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+        },
+        type:'POST',
+        url:"http://localhost:8081/replies/"+userId+"/question/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+        data:JSON.stringify(replyRequest)
+      }
+      $.ajax(settings).done(function(result){
+        $('#replies').html(result);
+
+      });
+    }
+    updateReply = function(replyId){
+      let currentUrlString = window.location.href;
+      let currentUrl = new URL(currentUrlString);
+      let pageSize =  10;
+      if (currentUrlString.indexOf("pageSize")>-1)
+      {
+        pageSize = currentUrl.searchParams.get("pageSize");
+
+      }
+      let pageNumber = currentUrl.searchParams.get("pageNumber");
+      let id = "updatedReply"+replyId;
+      let textArea = document.getElementById(id).value;
+      let replyRequest = {};
+      replyRequest.reply = textArea;
+
+      let settings = {
+        beforeSend: function(xhr,options)
+        {
+          xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+        },
+        type:'PUT',
+        url:"http://localhost:8081/replies/"+replyId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+        data:JSON.stringify(replyRequest)
+      }
+      $.ajax(settings).done(function(result){
+        $('#replies').html(result);
+        $('.modal-backdrop').remove();
+      });
+    }
+    deleteReply = function(replyId){
+      let currentUrlString = window.location.href;
+      let currentUrl = new URL(currentUrlString);
+      let pageSize =  10;
+      if (currentUrlString.indexOf("pageSize")>-1)
+      {
+        pageSize = currentUrl.searchParams.get("pageSize");
+
+      }
+      let pageNumber = currentUrl.searchParams.get("pageNumber");
+      let settings = {
+        beforeSend: function(xhr,options)
+        {
+          xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+        },
+        type:'DELETE',
+        url:"http://localhost:8081/replies/"+replyId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+      }
+      console.log(settings.url);
+      $.ajax(settings).done(function(result){
+        $('#replies').html(result);
+        $('.modal-backdrop').remove();
+      });
+    }
+  </script>
+</head>
+<body>
+<nav class="stroke" style="font-weight: bolder;">
+  <ul class="nav justify-content-center">
+    <li class="nav-item" id="home">
+      <a class="nav-link " aria-current="page" th:href="@{/users/groups}" > My Groups</a>
+    </li>
+    <li class="nav-item" >
+      <a class="nav-link" href="http://localhost:8081/users/profile" tabindex="-1">Profile</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="http://localhost:8081/users/feed" tabindex="-1">Feed</a>
+    </li>
+    <li class="nav-item" >
+      <a class="nav-link" href="http://localhost:8081/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>
+    </li>
+    <li class="nav-item" >
+      <a class="nav-link" href="http://localhost:8081/tags" tabindex="-1">Tags</a>
+    </li>
+    <li class="nav-item" >
+      <a class="nav-link" href="http://localhost:8081/category" tabindex="-1">Categories</a>
+    </li>
+    <li class="nav-item" id="signout">
+      <a class="nav-link" href="http://localhost:8081/users/logout">Sign Out</a>
+    </li>
+
+  </ul>
+</nav>
+<div id="test">
+
+</div>
+  <div class="container d-flex justify-content-center" >
+    <div id="question" class="row" >
+        <div class="col">
+          <h2 th:text="${questionDto.question}"></h2>
+          <span th:text="'Posted by : ' + ${questionDto.username} + ' on '+${questionDto.date}"></span>
+          <div>
+            <table border="0">
+              <tr>
+                <td th:each="tag : ${questionDto.tagList}" th:text="${tag.tagName}" style="color: #db4c3e"></td>
+              </tr>
+            </table>
+          </div>
+
+      <h4>Replies</h4>
+          <div th:fragment="replies" id="replies" >
+            <div th:each="reply : ${replies.content}" >
+               <div class="row">
+                <div class="col">
+                   <p th:text="${reply.reply}" ></p>
+                      <span th:text="'Replied by :' + ${reply.user.username} + ' on '+${reply.createdAt}"  ></span>
+                </div>
+                 <div class="col" th:if="${user.username == reply.user.username}">
+                 <button class="btn" style="color: red" th:attr="data-target='#deleteReply'+${reply.id }"
+                         data-toggle="modal"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                 <button class="btn" style="color:green;" th:attr="data-target='#updateReply'+${reply.id }"
+                         data-toggle="modal" ><i class="fas fa-pencil-alt" aria-hidden="true"></i></button>
+                 </div>
+                 <div class="col" th:unless="${user.username == reply.user.username}">
+                   <button class="btn" style="color: red" th:attr="data-target='#deleteReply'+${reply.id }"
+                           data-toggle="modal" disabled><i class="fa fa-trash" aria-hidden="true" ></i></button>
+                   <button class="btn" style="color:green;" th:attr="data-target='#updateReply'+${reply.id }"
+                           data-toggle="modal" disabled ><i class="fas fa-pencil-alt" aria-hidden="true" ></i></button>
+                 </div>
+                 <!--Reply update modal-->
+                 <div class="modal fade" th:id="'updateReply'+${reply.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                   <div class="modal-dialog" role="document">
+                     <div class="modal-content">
+                       <div class="modal-header">
+                         <h5 class="modal-title" id="exampleModalLabel">Edit Reply</h5>
+                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                         </button>
+                       </div>
+                       <div class="modal-body">
+                         <label> Enter the updated reply  </label>
+                         <textarea cols="36" rows="4" style="resize: none" class="form-control" th:id="'updatedReply'+${reply.id}"></textarea>
+                       </div>
+                       <div class="modal-footer">
+                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                         <button type="button" class="btn btn-primary" th:attr="onclick=|updateReply('${reply.id}')|" data-dismiss="modal">Save changes</button>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+                 <!-- Reply Delete modal -->
+
+                 <div class="modal fade" th:id="'deleteReply'+${reply.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                   <div class="modal-dialog">
+                     <div class="modal-content panel-warning">
+                       <div class="modal-header panel-heading">
+                         <h4 class="modal-title">Delete Reply</h4>
+                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                       </div>
+                       <div class="modal-body">
+                         <h2> Are you sure you want to delete this reply ?</h2>
+                       </div>
+                       <div class="modal-footer">
+                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                         <button type="button" class="btn btn-danger" th:attr="onclick=|deleteReply('${reply.id}')|" data-dismiss="modal">Delete</button>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+            </div>
+              <hr>
+
+            </div>
+            <div  style="padding-bottom: 10px">
+              <table border="0">
+                <p th:text="'Page '+${T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) + 1}
+                        + ' of '+${replies.totalPages}" class="h6"></p>
+                <tr>
+                  <div th:unless="${replies.totalPages == 0}">
+                    <td th:each="i : ${#numbers.sequence(0,replies.totalPages - 1)}">
+                      <div th:if = "${ T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) == i}" > |
+                        <a th:text=" ${i + 1} "
+                           th:href="@{/questions(id = ${questionDto.id},pageNumber=${i},pageSize=${pageSize})}"
+                           style="font-size: larger;color: rebeccapurple;font-weight: bolder;" class="pageLink"></a> |
+                      </div>
+                      <div th:unless = "${ T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) == i}" >
+                        | <a th:text=" ${i + 1} "
+                             th:href="@{/questions(id = ${questionDto.id},pageNumber=${i},pageSize=${pageSize})}"
+                             style="font-size: larger;color: red; font-weight: bold;" class="pageLink" ></a> |
+                      </div>
+                    </td>
+                  </div>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div id="form" class="form-group d-flex justify-content-center row">
+            <form>
+              <label for="reply">Add your own reply</label>
+              <textarea cols="48" rows="3" style="resize: none" id="reply" class="form-control" maxlength="255" required></textarea>
+              <button type="button" onclick="postReply()" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+  </div>
+
+
+
+</div>
+</body>
+</html>
