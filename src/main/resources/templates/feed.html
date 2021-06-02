@@ -1,0 +1,91 @@
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <link href=" https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="../static/profile.css" >
+  <script th:inline="javascript">
+
+  </script>
+</head>
+<body>
+<nav class="stroke" style="font-weight: bolder;">
+  <ul class="nav justify-content-center">
+    <li class="nav-item" id="home">
+      <a class="nav-link " aria-current="page" th:href="@{/users/groups}" > My Groups</a>
+    </li>
+    <li class="nav-item" >
+      <a class="nav-link" href="http://localhost:8081/users/profile" tabindex="-1">Profile</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="http://localhost:8081/users/feed?pageNumber=0" tabindex="-1">Feed</a>
+    </li>
+    <li class="nav-item" >
+      <a class="nav-link" href="http://localhost:8081/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>
+    </li>
+    <li class="nav-item" >
+      <a class="nav-link" href="http://localhost:8081/tags" tabindex="-1">Tags</a>
+    </li>
+    <li class="nav-item" >
+      <a class="nav-link" href="http://localhost:8081/category" tabindex="-1">Categories</a>
+    </li>
+    <li class="nav-item" id="signout">
+      <a class="nav-link" href="http://localhost:8081/users/logout">Sign Out</a>
+    </li>
+
+  </ul>
+</nav>
+<br>
+<div  class="content d-flex justify-content-center row" >
+  <div class="col-sm-1">
+
+  </div>
+  <div class="col-sm-7" style="border-left: 1px solid aquamarine; border-right: 1px solid aquamarine; ">
+  <div th:each="data : ${feed}">
+    <h4><a th:text="${data.question}" th:href="@{/questions(id=${data.id},sortField='createdAt',pageNumber=0)}"></a> </h4>
+    <table border="0">
+      <tr>
+        <td th:text="'Posted in '+${data.groupName}"  class="text-muted"></td>
+        <td th:text=" ' on '+ ${data.date}"  class="text-muted"></td>
+        <td th:text=" ' having ' + ${data.count} + ' likes'"   class="text-muted"></td>
+      </tr>
+
+    </table>
+    <hr>
+  </div>
+
+  <div  style="padding-bottom: 10px">
+    <table border="0" th:if = "${#httpServletRequest.getParameter('pageNumber')!=null}">
+      <p  th:text="'Page '+${T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) + 1}
+                        + ' of '+${feed.totalPages}" class="h6"></p>
+      <tr>
+        <div th:unless="${feed.totalPages == 0}">
+          <td th:each="i : ${#numbers.sequence(0,feed.totalPages - 1)}">
+            <div th:if = "${ T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) == i}" > |
+              <a th:text=" ${i + 1} "
+                 th:href="@{/users/feed(pageNumber=${i})}"
+                 style="font-size: larger;color: rebeccapurple;font-weight: bolder;" class="pageLink"></a> |
+            </div>
+            <div th:unless = "${ T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) == i}" >
+              | <a th:text=" ${i + 1} "
+                   th:href="@{/users/feed(pageNumber=${i})}"
+                   style="font-size: larger;color: red; font-weight: bold;" class="pageLink" ></a> |
+            </div>
+          </td>
+        </div>
+      </tr>
+    </table>
+  </div>
+  </div>
+</div>
+</div>
+</body>
+</html>

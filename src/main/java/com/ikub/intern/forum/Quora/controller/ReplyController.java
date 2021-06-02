@@ -1,0 +1,87 @@
+package com.ikub.intern.forum.Quora.controller;
+
+import com.ikub.intern.forum.Quora.dto.LoggedUser;
+import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
+import com.ikub.intern.forum.Quora.dto.reply.ReplyDto;
+import com.ikub.intern.forum.Quora.dto.reply.ReplyRequest;
+import com.ikub.intern.forum.Quora.entities.ReplyEntity;
+import com.ikub.intern.forum.Quora.entities.UserEntity;
+import com.ikub.intern.forum.Quora.service.QuestionService;
+import com.ikub.intern.forum.Quora.service.ReplyService;
+import com.ikub.intern.forum.Quora.utils.PageParams;
+import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpSession;
+import java.util.Set;
+
+@Controller
+@RequestMapping("/replies")
+public class ReplyController {
+    @Autowired
+    private ReplyService replyService;
+    @Autowired
+    private QuestionService questionService;
+
+    @PostMapping("/{uid}/question/{questionId}")
+    public String saveReply(@PathVariable Long uid, @PathVariable Long questionId,
+                            @RequestBody ReplyRequest replyRequest,
+                            ModelMap model,PageParams params,HttpSession httpSession){
+        replyService.save(uid,questionId,replyRequest);
+        UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");
+        QuestionDto questionDto = questionService.findById(questionId);
+        Page<ReplyDto> replies = replyService.getRepliesOfQuestion(questionId,params);
+        System.out.println(replies.getTotalPages());
+        model.addAttribute("replies",replies);
+        model.addAttribute("pageSize",params.getPageSize());
+        model.addAttribute("questionDto",questionDto);
+        model.addAttribute("user", user);
+        return "question::replies";
+    }
+    @PutMapping("/{id}")
+    public String updateReply(@PathVariable Long id, @RequestBody ReplyRequest replyRequest, ModelMap model, PageParams params, HttpSession httpSession){
+        Long questionId = (Long) httpSession.getAttribute("question");
+        replyService.update(id,replyRequest);
+        UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");
+        QuestionDto questionDto = questionService.findById(questionId);
+
+        Page<ReplyDto> replyDtos = replyService.getRepliesOfQuestion(questionId,params);
+        if (params.getPageNumber()>replyDtos.getTotalPages()){
+            params.setPageNumber(0);
+            replyDtos = replyService.getRepliesOfQuestion(questionId,params);
+        }
+        model.addAttribute("questionDto",questionDto);
+        model.addAttribute("user",user);
+        model.addAttribute("replies", replyDtos);
+        model.addAttribute("pageSize",params.getPageSize());
+        return "question::replies";
+    }
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id,ModelMap model,PageParams params,HttpSession httpSession){
+        Long questionId = (Long) httpSession.getAttribute("question");
+        UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
+        replyService.deleteReply(id);
+
+        Page<ReplyDto> replyDtos = replyService.getRepliesOfQuestion(questionId,params);
+        if (params.getPageNumber()>replyDtos.getTotalPages()){
+            params.setPageNumber(0);
+            replyDtos = replyService.getRepliesOfQuestion(questionId,params);
+        }
+        QuestionDto questionDto = questionService.findById(questionId);
+
+        model.addAttribute("questionDto",questionDto);
+        model.addAttribute("user", userEntity);
+        model.addAttribute("replies", replyDtos);
+        model.addAttribute("pageSize",params.getPageSize());
+
+        return "question::replies";
+    }
+
+}

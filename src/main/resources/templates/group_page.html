@@ -1,0 +1,434 @@
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href=" https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        /*input[type=checkbox] {*/
+        /*    display: inline-block;*/
+        /*    float: left;*/
+        /*}*/
+    </style>
+    <link rel="stylesheet" href="styles/profile.css">
+    <script th:inline="javascript">
+
+        function definePageSize () {
+            let pageSize = document.getElementById("size").value;
+
+            /*<![CDATA[*/
+            let groupId = /*[[${group.id}]]*/ 'default';
+            /*]]>*/
+            window.location.replace("http://localhost:8081/groups/" + groupId + "?pageNumber=0&pageSize=" + pageSize);
+        }
+    </script>
+    <script th:inline="javascript" >
+        /*<![CDATA[*/
+        let nrQ = /*[[${questions.content.size()}]]*/'default';
+            /*]]>*/
+            console.log(nrQ);
+        function postQuestion(){
+            let questionRequest = {};
+            questionRequest.question = $('#question').val();
+            if ($('#question').val()=='') return;
+            /*<![CDATA[*/
+            let userId = /*[[${loggedUser.id}]]*/'default';
+            let groupId = /*[[${group.id}]]*/'default';
+            /*]]>*/
+            let tags = [];
+            $("input:checkbox[name=tag]:checked").each(function(){
+                tags.push(parseInt($(this).val()));
+            });
+            console.log(tags);
+            questionRequest.userId = userId;
+            questionRequest.groupId = groupId;
+            questionRequest.tags = tags;
+            let currentUrlString = window.location.href;
+            let currentUrl = new URL(currentUrlString);
+            let pageSize =  10;
+            if (currentUrlString.indexOf("pageSize")>-1)
+            {
+                pageSize = currentUrl.searchParams.get("pageSize");
+
+            }
+            var settings = {
+                beforeSend: function(xhr,options)
+                {
+                    xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+                },
+                type:'POST',
+                url:"http://localhost:8081/questions/new?pageSize="+pageSize,
+                data:JSON.stringify(questionRequest)
+            }
+            $.ajax(settings).done(function(result){
+                $('#questions').html(result);
+
+            });
+        }
+        function postLike(questionId,userId){
+            let currentUrlString = window.location.href;
+            let currentUrl = new URL(currentUrlString);
+            let pageSize =  10;
+            if (currentUrlString.indexOf("pageSize")>-1)
+            {
+                pageSize = currentUrl.searchParams.get("pageSize");
+
+            }
+            let pageNumber = currentUrl.searchParams.get("pageNumber");
+            let settings = {
+                beforeSend: function(xhr,options)
+                {
+                    xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+                },
+                type:'POST',
+                url:"http://localhost:8081/upvotes/"+userId+"/question/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+            }
+            $.ajax(settings).done(function(e){
+                $('#questions').html(e);
+            });
+        }
+
+        function updateQuestion(questionId){
+            let currentUrlString = window.location.href;
+            let currentUrl = new URL(currentUrlString);
+            let pageSize =  10;
+            if (currentUrlString.indexOf("pageSize")>-1)
+            {
+                pageSize = currentUrl.searchParams.get("pageSize");
+
+            }
+            let pageNumber = currentUrl.searchParams.get("pageNumber");
+
+            let str = "updatedQuestion"+questionId;
+            let updateQuestion =document.getElementById(str).value;
+            let updateRequest = {};
+            updateRequest.question = updateQuestion;
+            let settings = {
+                beforeSend: function(xhr,options)
+                {
+                    xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+                },
+                type:'PUT',
+                url:"http://localhost:8081/questions/update/question/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+                data: JSON.stringify(updateRequest)
+            };
+            console.log(updateRequest);
+            $.ajax(settings).done(function(e){
+                $('#questions').html(e);
+            });
+        }
+        function deleteQuestion(questionId){
+            let currentUrlString = window.location.href;
+            let currentUrl = new URL(currentUrlString);
+            let pageSize =  10;
+            if (currentUrlString.indexOf("pageSize")>-1)
+            {
+                pageSize = currentUrl.searchParams.get("pageSize");
+
+            }
+            let pageNumber = currentUrl.searchParams.get("pageNumber");
+            let settings = {
+                beforeSend: function(xhr,options)
+                {
+                    xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+                },
+                type:'DELETE',
+                url:"http://localhost:8081/questions/delete/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+            }
+            $.ajax(settings).done(function(e){
+                $('#questions').html(e);
+            });
+        }
+    </script>
+
+</head>
+<body>
+<nav class="stroke" style="font-weight: bolder;">
+    <ul class="nav justify-content-center">
+        <li class="nav-item" id="home">
+            <a class="nav-link " aria-current="page" th:href="@{/users/groups}" > My Groups</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="http://localhost:8081/users/profile" tabindex="-1">Profile</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:8081/users/feed?pageNumber=0" tabindex="-1">Feed</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="http://localhost:8081/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="http://localhost:8081/tags" tabindex="-1">Tags</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="http://localhost:8081/category" tabindex="-1">Categories</a>
+        </li>
+        <li class="nav-item" id="signout">
+            <a class="nav-link" href="http://localhost:8081/users/logout">Sign Out</a>
+        </li>
+
+    </ul>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card>">
+                <div class="card-body">
+                    <h2 th:utext="${group.groupName}" class="card-title"></h2>
+                    <h6 th:text="${group.categoryDto.categoryName}" class="card-subtitle mb-2 text-muted"></h6>
+                    <p th:text="${group.description}" class="card-text"></p>
+                </div>
+            </div>
+            <div class="card>">
+                <div class="card-body">
+                    <div th:if="${loggedUser.username == group.admin.username}">
+                        <h4 class="card-title">Users of this group</h4>
+                        <table class="table table-hover">
+                            <tr th:each="user : ${users}">
+                                <td th:text="${user.username}"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <div class="row">
+
+            </div>
+
+            <div class="form-group">
+
+                    <h5>Ask a question</h5>
+                    <div class="row">
+                        <div class="col align-self-start" th:if="${group.userIsPartOfTheGroup(loggedUser.username)==true}">
+                            <textarea rows="2" cols="36" class="form-control" maxlength="255" style="resize: none"  required data-target="#askQuestion" data-toggle="modal" ></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col align-self-center">
+
+                        </div>
+                    </div>
+
+            </div>
+
+            <div class="col-sm-3" style="margin-left: 80%">
+                <h6>Choose a preferred page size</h6>
+                <select onchange="definePageSize()" class="form-control input-sm" id="size">
+                    <option value="">--</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                </select>
+            </div>
+            <div th:fragment="questions" id="questions">
+            <div th:each="question : ${questions.content}" >
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <section class="post-heading">
+                            <div class="row">
+                                <div class="col-md-11">
+                                    <div class="media">
+                                        <div class="media-body">
+                                            <table>
+                                                <tr>
+                                                    <td><a th:href="@{/questions(id=${question.id},sortField='createdAt',pageNumber=0)}" class="anchor-username">
+                                                        <h4
+                                                            class="media-heading" th:text="${question.question}"> </h4></a>
+                                                        <span> Posted by:</span>
+                                                        <a href="#" class="anchor-time" th:text="${question.username}"></a>
+                                                        <span th:text="' on '+${question.date}"></span>
+                                                    </td>
+                                                    <td th:if="${loggedUser.username == question.username}">
+                                                        <button class="btn" style="color: red" th:attr="data-target='#deleteQuestion'+${question.id }" data-toggle="modal"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    </td>
+                                                    <td th:if="${loggedUser.username == question.username}"  th:attr="data-target='#updateQuestion'+${question.id }"  data-toggle="modal" >
+                                                        <button class="btn" style="color:green;"><i class="fas fa-pencil-alt" aria-hidden="true"></i></button>
+                                                    </td>
+                                                    <td th:unless="${loggedUser.username == question.username}" >
+                                                        <button class="btn" style="color: red" disabled><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    </td>
+                                                    <td th:unless="${loggedUser.username == question.username}">
+                                                        <button class="btn" style="color:green;" disabled><i class="fas fa-pencil-alt" aria-hidden="true"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="post-footer">
+                            <hr>
+                            <div class="post-footer-option container">
+                                <ul class="list-unstyled">
+                                    <li >
+                                        <div th:if = "${question.hasUpvoted(loggedUser.username)==true}">
+<!--                                            <a th:href="@{/upvotes/{uid}/question/{questionId}/{pageNumber}(uid=${loggedUser.id},questionId=${question.id}-->
+<!--                                        ,pageNumber=${#httpServletRequest.getParameter('pageNumber')})}" th:id="'like'+${question.id}" >-->
+<!--                                                <i  class="fa fa-thumbs-up" style="color: red" ></i> Upvote-->
+
+<!--                                            </a>-->
+                                            <button class="btn" ><i  class="fa fa-thumbs-up" style="color: #2c6ad4"
+                                                                     th:attr="onclick=|postLike('${question.id}','${loggedUser.id}')|">
+
+                                            </i> Upvote</button>
+                                            <label
+                                                    th:text="${question.upvotedBy.size()}" style="color: #2c6ad4">
+                                            </label>
+                                        </div>
+                                        <div th:unless= "${question.hasUpvoted(loggedUser.username)==true}">
+                                            <button class="btn"  th:attr="onclick=|postLike('${question.id}','${loggedUser.id}')|"><i  class="fa fa-thumbs-up"  ></i> Upvote</button>
+
+                                            <label
+                                                    th:text="${question.upvotedBy.size()}" style="color: #2c6ad4">
+                                            </label>
+                                        </div>
+
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-reply" aria-hidden="true"> </i> Replies </a>
+                                        <label
+                                            style="color: #2c6ad4" th:text="${question.replies.size()}">
+
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="post-footer-comment-wrapper">
+                                <div class="comment-form">
+
+                                </div>
+                                <div class="comment">
+                                    <div class="media">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <!-- Question Update modal -->
+                <div class="modal fade" th:id="'updateQuestion'+${question.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Edit Question</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <label> Enter the new question  </label>
+                                <textarea cols="36" rows="4" style="resize: none" class="form-control" th:id="'updatedQuestion'+${question.id}" required></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" th:attr="onclick=|updateQuestion('${question.id}')|" data-dismiss="modal">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Question Delete modal -->
+
+                <div class="modal fade" th:id="'deleteQuestion'+${question.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content panel-warning">
+                            <div class="modal-header panel-heading">
+                                <h4 class="modal-title">Delete Question</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <h2> Are you sure you want to delete this question ?</h2>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-danger" th:attr="onclick=|deleteQuestion('${question.id}')|" data-dismiss="modal">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div style="padding-bottom: 10px">
+                <!-- paging -->
+                <table border="0">
+                    <tr>
+                        <p th:text="'Page '+${T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) + 1}
+                        + ' of '+${questions.totalPages}" class="h6">
+
+                        </p>
+                        <div th:unless="${questions.totalPages == 0}">
+                        <td th:each=" i : ${#numbers.sequence(0,questions.totalPages - 1)}">
+                            <div th:if = "${ T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) == i}" > |
+                                <a th:text=" ${i + 1} "
+                                   th:href="@{/groups/{gid}(gid = ${group.id},pageNumber=${i},pageSize=${pageSize})}"
+                                   style="font-size: larger;color: rebeccapurple;font-weight: bolder;" class="pageLink"></a> |
+                            </div>
+                            <div th:unless = "${ T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) == i}" >
+                                | <a th:text=" ${i + 1} "
+                                     th:href="@{/groups/{gid}(gid = ${group.id},pageNumber=${i},pageSize=${pageSize})}"
+                                     style="font-size: larger;color: red; font-weight: bold;" class="pageLink" ></a> |
+                            </div>
+                        </td>
+                        </div>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="saveQuestion">
+        <!-- Button trigger modal -->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="askQuestion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" th:if="${group.userIsPartOfTheGroup(loggedUser.username)==true}">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New Question</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form>
+                    <div class="modal-body">
+                        <h6>Type the question you wish to ask </h6>
+                        <textarea rows="2" cols="36" class="form-control" maxlength="255" style="resize: none" id="question" required ></textarea>
+                        <hr>
+                        <div id="tags" th:each="tag : ${tags}">
+
+                            <label th:inline="text"><input type="checkbox" name="tag" th:value="${tag.id}">[[${tag.tagName}]]</label>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="button" value="Submit" class="btn btn-primary" data-dismiss="modal"
+                               style="border-radius: 10px; float: right;" onclick="postQuestion()">
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
