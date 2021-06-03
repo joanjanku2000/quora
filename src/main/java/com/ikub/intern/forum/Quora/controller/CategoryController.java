@@ -14,7 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.httpSession;
+import javax.servlet.http.HttpSession;
+
 import java.util.List;
 
 @Controller
@@ -24,7 +25,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping("/save")
-    public String saveCategory(@RequestBody CategoryCreateRequest categoryCreateRequest, Model model, httpSession httpSession){
+    public String saveCategory(@RequestBody CategoryCreateRequest categoryCreateRequest, Model model, HttpSession httpSession){
         UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
         List<CategoryDto> categoryEntityList;
         try{

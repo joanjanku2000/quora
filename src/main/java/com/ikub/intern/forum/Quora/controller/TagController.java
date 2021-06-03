@@ -15,7 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.httpSession;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -31,7 +31,7 @@ public class TagController {
         return "tags";
     }
     @PostMapping("/save")
-    public String save(@RequestBody TagDtoForCreate tagDtoForCreate, Model model, httpSession httpSession){
+    public String save(@RequestBody TagDtoForCreate tagDtoForCreate, Model model, HttpSession httpSession){
         UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
         List<TagDto> tagDtoList;
      try {
