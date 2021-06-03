@@ -200,19 +200,25 @@ public class UserController {
         return model;
     }
     @PostMapping("/postlogin")
-    public ModelAndView postLogin(@Valid @ModelAttribute UserCreateRequest userCreateRequest
-            ,@AuthenticationPrincipal CustomOauth2User user,ModelMap map){
+    public String postLogin(@Valid @ModelAttribute UserCreateRequest userCreateRequest
+            ,@AuthenticationPrincipal CustomOauth2User user,Model model){
         if (userService.userExists(user)){
-            return new ModelAndView("redirect:/users/profile",map);
+            return "redirect:/users/profile";
         }
        //todo in a separate method
         userCreateRequest.setFirstName(user.getGivenName());
         userCreateRequest.setLastName(user.getLastName());
         userCreateRequest.setEmail(user.getEmail());
 
-    //    System.out.println(userCreateRequest);
-        userService.saveUser(userCreateRequest);
-        return new ModelAndView("redirect:/users/profile",map);
+
+      try{
+            userService.saveUser(userCreateRequest);
+            return "redirect:/users/profile";
+        } catch(BadRequestException e){
+          model.addAttribute("usernameError","Username is already taken");
+          model.addAttribute("userDTO",new UserCreateRequest());
+          return "postlogin";
+      }
 
     }
     @GetMapping("/groups")
