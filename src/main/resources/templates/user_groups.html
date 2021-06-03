@@ -58,7 +58,7 @@
             <i class="fa fa-star" aria-hidden="true"></i></td>
           <td th:unless="${loggedUser.username == group.admin.username}">
             <a th:text="${group.groupName}" th:href="@{/groups/{id}(id=${group.id},pageNumber=0)}"></a></td>
-          <td ><a th:href="@{/category/{id}(id=${group.categoryDto.id})}" th:text="${group.categoryDto.categoryName}"></a></td>
+          <td ><a href="#" th:text="${group.categoryDto.categoryName}"></a></td>
         </tr>
       </tbody>
     </table>
