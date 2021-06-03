@@ -104,7 +104,7 @@ public class UserController {
         model.addAttribute("userUpdateDTO",userUpdateRequest);
         try{
             userService.update(userEntity.getId(), userUpdateRequest);
-            return "profile";
+            return "redirect:/users/profile";
         } catch (BadRequestException e){
            model.addAttribute("error","Sorry, that username was already taken");
            return "profile";
