@@ -48,7 +48,7 @@ public class UserService  {
             throw new BadRequestException("The username already exists");
         }
         UserEntity userEntity = UserConverter.toEntity(userCreateRequest);
-
+        logger.info("Saving user {}",userEntity);
         userRepo.save(userEntity);
     }
     private boolean emailExists(String email){
