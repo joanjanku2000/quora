@@ -25,7 +25,7 @@ public class TagService {
     public void saveTag(TagDtoForCreate tag, UserEntity userEntity){
         Optional<TagEntity> tagEntity = tagRepo.findByTagName(tag.getTagName());
         logger.info("Saving tag by {}",userEntity);
-        if (!tagEntity.isPresent()) throw new BadRequestException("Sorry, the tag with the given name already exists");
+        if (tagEntity.isPresent()) throw new BadRequestException("Sorry, the tag with the given name already exists");
         TagEntity newTag = TagConverter.toEntity(tag,userEntity);
         logger.info("Saving tag {}",newTag);
         tagRepo.save(newTag);
