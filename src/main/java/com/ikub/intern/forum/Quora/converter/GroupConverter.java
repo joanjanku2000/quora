@@ -34,12 +34,9 @@ public class GroupConverter {
                 userGroupEntity.getDescription(),userGroupEntity.getCreatedAt(),
                 userGroupEntity.getUpdatedAt(),UserConverter.entitySetToDtoMiniSet(userGroupEntity.getAdmin())
                 ,CategoryConverter.entityToDto(userGroupEntity.getCategoryEntity())
-               // ,UserConverter.entitySetToDtoMiniSet(userGroupEntity.getUsers())
-
                 ,QuestionConverter.entitySetToDtoSet(userGroupEntity.getQuestions()));
     }
     public static GroupDtoMini entityToDtoMini(UserGroupEntity userGroupEntity){
-
         return new GroupDtoMini(userGroupEntity.getId(),userGroupEntity.getGroupName(),userGroupEntity.getDescription()
                 ,UserConverter.entitySetToDtoMiniSet(userGroupEntity.getAdmin()),CategoryConverter.entityToDto(userGroupEntity.getCategoryEntity()));
     }

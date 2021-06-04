@@ -88,10 +88,6 @@ public class UserGroupEntity {
     private CategoryEntity categoryEntity;
     @Column
     private boolean active;
-//
-//    @ManyToMany(mappedBy = "userGroupEntityList",fetch = FetchType.EAGER)
-//    @JsonIgnoreProperties("userGroupEntityList")
-//    private Set<UserEntity> users;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="id_group",referencedColumnName = "id")

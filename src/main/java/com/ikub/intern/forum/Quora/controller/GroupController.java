@@ -120,8 +120,8 @@ public class GroupController {
         return modelAndView;
     }
     @PutMapping("/update/{id}")
-    public void update(@PathVariable Long id, @RequestBody GroupDtoForCreateUpdate groupDto){
-        groupService.updateGroup(id,groupDto);
+    public GroupDto update(@PathVariable Long id, @RequestBody GroupDtoForCreateUpdate groupDto){
+        return groupService.updateGroup(id,groupDto);
     }
     @DeleteMapping("/delete/{id}")
     public void delete (@PathVariable Long id){

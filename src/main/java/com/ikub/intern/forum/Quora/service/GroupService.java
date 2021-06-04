@@ -34,39 +34,51 @@ public class GroupService {
     private UserRepo userRepo;
     @Autowired
     private QuestionsRepo questionRepo;
+
     @Transactional
     public void createGroup(Long adminId,GroupDtoForCreateUpdate groupDtoForCreate){
-        CategoryEntity categoryEntity = categoryRepo
-                .findById(groupDtoForCreate.getCategoryId())
-                .orElse(null);
+
+        Optional<CategoryEntity> categoryEntity = categoryRepo
+                .findById(groupDtoForCreate.getCategoryId());
         Optional<UserEntity> admin = userRepo.findById(adminId);
+
         if (!admin.isPresent()){
             throw new NotFoundException("Admin not found");
         }
 
-        if (categoryEntity==null) throw new BadRequestException("The category doesn't exist");
+        if (!categoryEntity.isPresent()) {
+            throw new BadRequestException("The category doesn't exist");
+        }
         if (groupRepo.findByGroupName(groupDtoForCreate.getGroupName().trim()).isPresent()){
            throw new BadRequestException("A Group with the same name already exists");
         }
-        UserGroupEntity groupEntity = GroupConverter.toEntity(groupDtoForCreate,categoryEntity);
+        UserGroupEntity groupEntity
+                = GroupConverter.toEntity(groupDtoForCreate,categoryEntity.get());
         groupEntity.setAdmin(admin.get());
-        groupRepo.save(groupEntity);
-        Optional<UserGroupEntity> savedGroup = groupRepo.findByGroupName(groupEntity.getGroupName());
-        userRepo.addUserToGroup(adminId,savedGroup.get().getId());
-        userRepo.activateUserMembership(adminId,savedGroup.get().getId());
 
+        UserGroupEntity savedGroup = groupRepo.save(groupEntity);
+
+        userRepo.addUserToGroup(adminId,savedGroup.getId());
+        userRepo.activateUserMembership(adminId,savedGroup.getId());
     }
-    public void updateGroup(Long id,GroupDtoForCreateUpdate groupDto){
-        UserGroupEntity groupEntity = groupRepo.findById(id).orElse(null);
-        CategoryEntity categoryEntity = categoryRepo.findById(groupDto.getCategoryId()).orElse(null);
-        if (groupEntity==null) throw new BadRequestException("The group with this id doesn't exist");
-        if (categoryEntity==null) throw new BadRequestException("The category with this id doesn't exist");
-        if (groupRepo.findByGroupName(groupDto.getGroupName()).isPresent())
+    public GroupDto updateGroup(Long id,GroupDtoForCreateUpdate groupDto){
+        Optional<UserGroupEntity> groupEntity = groupRepo.findById(id);
+        Optional<CategoryEntity> categoryEntity = categoryRepo.findById(groupDto.getCategoryId());
+
+        if (!groupEntity.isPresent()){
+            throw new BadRequestException("The group with this id doesn't exist");
+        }
+        if (!categoryEntity.isPresent()) {
+            throw new BadRequestException("The category with this id doesn't exist");
+        }
+        if (groupRepo.findByGroupName(groupDto.getGroupName()).isPresent()){
             throw new BadRequestException("The name is already taken" +
-                ",please try a different one");
-        groupEntity.setDescription(groupDto.getDescription());
-        groupEntity.setGroupName(groupDto.getGroupName());
-        groupEntity.setCategoryEntity(categoryEntity);
+                    ",please try a different one");
+        }
+        groupEntity.get().setDescription(groupDto.getDescription());
+        groupEntity.get().setGroupName(groupDto.getGroupName());
+        groupEntity.get().setCategoryEntity(categoryEntity.get());
+        return GroupConverter.entityToDto(groupRepo.save(groupEntity.get()));
     }
 
     @Transactional
