@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryService {
@@ -28,20 +29,20 @@ public class CategoryService {
             throw new BadRequestException("Sorry, the category you are trying to add already exists");
         }
         categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,createdBy);
-        categoryRepo.save(categoryEntity);
+         categoryRepo.save(categoryEntity);
     }
     public void deleteCategory(Long id){
-        CategoryEntity categoryEntity = categoryRepo.findById(id).orElse(null);
-        if (categoryEntity==null) throw new BadRequestException("The category you requested does not exist");
-        categoryEntity.setActive(false);
-        categoryRepo.save(categoryEntity);
+        Optional<CategoryEntity> categoryEntity = categoryRepo.findById(id);
+        if (!categoryEntity.isPresent()) throw new BadRequestException("The category you requested does not exist");
+        categoryEntity.get().setActive(false);
+        categoryRepo.save(categoryEntity.get());
     }
     public List<CategoryDto> findAll(){
         return CategoryConverter.entityListToDtoList(categoryRepo.findAll());
     }
-    public CategoryEntity findById(Long id){
-        CategoryEntity categoryEntity = categoryRepo.findById(id).orElse(null);
-        if (categoryEntity==null) throw new BadRequestException("The category with the given id wasn;t found");
-        return categoryEntity;
+    public CategoryDto findById(Long id){
+        Optional<CategoryEntity> categoryEntity = categoryRepo.findById(id);
+        if (!categoryEntity.isPresent()) throw new BadRequestException("The category with the given id wasn;t found");
+        return CategoryConverter.entityToDto(categoryEntity.get());
     }
 }

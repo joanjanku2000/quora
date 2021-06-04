@@ -56,7 +56,7 @@ public class CategoryController {
 
 
     @GetMapping("/{id}")
-    public CategoryEntity findById(@PathVariable Long id){
+    public CategoryDto findById(@PathVariable Long id){
         return categoryService.findById(id);
     }
     @DeleteMapping("/{id}")

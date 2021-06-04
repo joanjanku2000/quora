@@ -130,16 +130,16 @@ public class UserEntity {
     @Column
     @NotNull
     private boolean active;
-//
-//    @WhereJoinTable(clause = "active=true")
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name="user_group_connection",
-//            joinColumns = @JoinColumn(name="id_user"),
-//            inverseJoinColumns = @JoinColumn(name="id_group")
-//    )
-//
-//    @JsonIgnoreProperties({"users","createdBy","updatedBy","admin","questions"})
-//    @Where(clause = "active=true") //group is not deleted
-//    private Set<UserGroupEntity> userGroupEntityList;
+
+    public UserEntity(String firstName, String lastName, String email, String gender, String username, LocalDate birthday, LocalDateTime createdAt, String userRole, boolean active) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.gender = gender;
+        this.username = username;
+        this.birthday = birthday;
+        this.createdAt = createdAt;
+        this.userRole = userRole;
+        this.active = active;
+    }
 }
