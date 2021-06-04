@@ -79,13 +79,6 @@ public class QuestionService {
         }
         return QuestionConverter.entityToDto(questionEntity.get());
     }
-    public QuestionEntity findEntitydById(Long id){
-        Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
-        if (!questionEntity.isPresent()){
-            throw new NotFoundException("Question not found");
-        }
-        return questionEntity.get();
-    }
     public Page<QuestionDto> findAllInAGroup(PageParams pageParams,Long id){
         if (pageParams==null) pageParams=new PageParams();
         pageParams.setSort(Sort.Direction.DESC);

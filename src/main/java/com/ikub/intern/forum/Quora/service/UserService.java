@@ -81,7 +81,6 @@ public class UserService  {
            userRepo.save(userToBeUpdated);
 
     }
-
     public void deleteUser(Long id){
         UserEntity userToBeDeleted = userRepo.findById(id).orElse(null);
         if (userToBeDeleted==null)
@@ -90,7 +89,6 @@ public class UserService  {
         userRepo.save(userToBeDeleted);
 
     }
-
     public void addUserToGroup(Long userId,Long groupId){
         UserEntity userEntity = userRepo.findById(userId).orElse(null);
         UserGroupEntity groupEntity = groupRepo.findById(groupId).orElse(null);
@@ -106,7 +104,6 @@ public class UserService  {
         }
 
     }
-    //only admins of a group do this
     public void activateUserMembership(Long userId,Long groupId){
         UserEntity userEntity = userRepo.findById(userId).orElse(null);
         UserGroupEntity groupEntity = groupRepo.findById(groupId).orElse(null);
@@ -120,7 +117,6 @@ public class UserService  {
             throw new BadRequestException("The user or the group doesn't exist");
         userRepo.activateUserMembership(userId,groupId);
     }
-
     public void deleteMembership(Long userId,Long groupId){
         UserEntity userEntity = userRepo.findById(userId).orElse(null);
         UserGroupEntity groupEntity = groupRepo.findById(groupId).orElse(null);
@@ -130,7 +126,6 @@ public class UserService  {
         if (userRepo.deleteMembership(userId,groupId)<=0)
             throw new BadRequestException("The deletion could not be made");
     }
-
     public boolean userExists(CustomOauth2User user) {
         UserEntity existingUser = userRepo.findByEmail(user.getEmail());
         System.out.println(user.getAttributes());
@@ -146,8 +141,7 @@ public class UserService  {
     public List<UserGroup> findUserJoinRequests(Long uid){
         return userRepo.findAllRequestsToGroups(uid);
     }
-
-   public List<UserDto> findUsersInGroup(Long gid){
+    public List<UserDto> findUsersInGroup(Long gid){
         return UserConverter.entityListToDtoList((userRepo.findUsersInGroup(gid)));
     }
     public List<GroupDto> findGroupsOfUser(Long uid){

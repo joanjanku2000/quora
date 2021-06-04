@@ -77,11 +77,6 @@ public class ReplyService {
         replyRepo.save(reply);
         logger.info("Deletion successful");
     }
-    public Set<ReplyDto> getRepliesOfQuestion(Long questionId){
-        QuestionEntity question = questionRepo.findById(questionId).orElse(null);
-        if (question==null) throw  new BadRequestException("Question does not exist");
-        return ReplyConverter.entitySetToDto(question.getReplies());
-    }
     public ReplyDto findById(Long id){
         Optional<ReplyEntity> replyEntity = replyRepo.findById(id);
         if (!replyEntity.isPresent()){
