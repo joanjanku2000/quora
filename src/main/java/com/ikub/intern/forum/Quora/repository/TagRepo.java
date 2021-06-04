@@ -10,9 +10,9 @@ import java.util.Optional;
 public interface TagRepo extends JpaRepository<TagEntity,Long> {
 
     @Query("Select t from TagEntity t where t.id = :id and t.active = true")
-    public Optional<TagEntity> findById(@Param("id")Long id);
+    Optional<TagEntity> findById(@Param("id")Long id);
 
     @Query("Select t from TagEntity t where t.tagName = :name and t.active = true")
-    public Optional<TagEntity> findByTagName(@Param("name") String name);
+    Optional<TagEntity> findByTagName(@Param("name") String name);
 
 }
