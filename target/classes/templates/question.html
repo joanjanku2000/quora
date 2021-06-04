@@ -1,6 +1,8 @@
 <html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+  <title>Question</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
   <link href=" https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" rel="stylesheet">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -195,7 +197,7 @@
                        </div>
                        <div class="modal-body">
                          <label> Enter the updated reply  </label>
-                         <textarea cols="36" rows="4" style="resize: none" class="form-control" th:id="'updatedReply'+${reply.id}"></textarea>
+                         <textarea cols="36" rows="4" style="resize: none" class="form-control" th:id="'updatedReply'+${reply.id}" required></textarea>
                        </div>
                        <div class="modal-footer">
                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -225,7 +227,7 @@
                  </div>
             </div>
               <hr>
-
+              <p th:if="${error !=null}" th:text="${error}" style="color: red"></p>
             </div>
             <div  style="padding-bottom: 10px">
               <table border="0">
@@ -257,6 +259,7 @@
               <textarea cols="48" rows="3" style="resize: none" id="reply" class="form-control" maxlength="255" required></textarea>
               <button type="button" onclick="postReply()" class="btn btn-primary">Submit</button>
             </form>
+
         </div>
     </div>
 

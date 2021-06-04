@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.Set;
 
 @Controller
@@ -32,13 +33,16 @@ public class ReplyController {
 
     @PostMapping("/{uid}/question/{questionId}")
     public String saveReply(@PathVariable Long uid, @PathVariable Long questionId,
-                            @RequestBody ReplyRequest replyRequest,
+                           @Valid @RequestBody ReplyRequest replyRequest,
                             ModelMap model,PageParams params,HttpSession httpSession){
-        replyService.save(uid,questionId,replyRequest);
+        if (!replyRequest.getReply().isEmpty())
+            replyService.save(uid,questionId,replyRequest);
+        else
+            model.addAttribute("error","Please don't leave an empty body");
         UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");
         QuestionDto questionDto = questionService.findById(questionId);
         Page<ReplyDto> replies = replyService.getRepliesOfQuestion(questionId,params);
-        System.out.println(replies.getTotalPages());
+
         model.addAttribute("replies",replies);
         model.addAttribute("pageSize",params.getPageSize());
         model.addAttribute("questionDto",questionDto);
@@ -46,7 +50,7 @@ public class ReplyController {
         return "question::replies";
     }
     @PutMapping("/{id}")
-    public String updateReply(@PathVariable Long id, @RequestBody ReplyRequest replyRequest, ModelMap model, PageParams params, HttpSession httpSession){
+    public String updateReply(@PathVariable Long id, @Valid @RequestBody ReplyRequest replyRequest, ModelMap model, PageParams params, HttpSession httpSession){
         Long questionId = (Long) httpSession.getAttribute("question");
         replyService.update(id,replyRequest);
         UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");

@@ -20,13 +20,11 @@ public class CategoryEntity {
     private Long id;
     @Column
     private String categoryName;
-
     @ManyToOne
     @JoinColumn(name="created_by",referencedColumnName = "id")
     private UserEntity createdBy;
     @Column
     private LocalDateTime createdAt;
-
     @Column
     private boolean active;
 }

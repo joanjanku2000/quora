@@ -36,8 +36,5 @@ public class UserCreateRequest {
     @NotNull
     @NotBlank(message = "Birthday cannot be empty")
     private String birthday;
-//    @NotNull
-//    @NotBlank(message = "Password cannot be empty")
-//    @Size(min = 1,max = 5,message = "Password should be at least 1 character in length")
-//    private String password;
+
 }

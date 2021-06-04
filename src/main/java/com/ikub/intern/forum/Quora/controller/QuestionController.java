@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -43,10 +44,12 @@ public class QuestionController {
      * @param questionCreateRequest
      */
     @PostMapping("/new")
-    public String saveQuestion(@RequestBody QuestionCreateRequest questionCreateRequest,
+    public String saveQuestion(@Valid @RequestBody QuestionCreateRequest questionCreateRequest,
                                      ModelMap map,PageParams params,HttpSession httpSession){
         if (!questionCreateRequest.getQuestion().isEmpty())
             questionService.newQuestion(questionCreateRequest);
+        else
+            map.addAttribute("error","Question cannot be empty");
         UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
         params.setPageNumber(0);
         List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
@@ -82,8 +85,11 @@ public class QuestionController {
             params.setPageNumber(0);
             replyDtos = replyService.getRepliesOfQuestion(id,params);
         }
-
-
+        //handle page number
+        if (params.getPageNumber()>replyDtos.getTotalPages()-1 || params.getPageNumber()<0){
+            params.setPageNumber(0);
+            replyDtos = replyService.getRepliesOfQuestion(id,params);
+        }
         modelAndView.addObject(questionDto);
         modelAndView.addObject("user",loggedUser);
         modelAndView.addObject("replies",replyDtos);

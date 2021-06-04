@@ -13,9 +13,5 @@ public class QuoraApplication {
 		SpringApplication.run(QuoraApplication.class, args);
 	}
 
-	@Bean
-	public RestTemplate restTemplate(){
-		return new RestTemplate();
-	}
 
 }

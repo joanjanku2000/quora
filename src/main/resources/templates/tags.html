@@ -2,7 +2,9 @@
 <html lang="en">
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+  <title>Tags</title>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>Categories</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,22 +19,22 @@
       <a class="nav-link " aria-current="page" th:href="@{/users/groups}" > My Groups</a>
     </li>
     <li class="nav-item" >
-      <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/profile" tabindex="-1">Profile</a>
+      <a class="nav-link" href="http://localhost:8081/users/profile" tabindex="-1">Profile</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/feed?pageNumber=0" tabindex="-1">Feed</a>
+      <a class="nav-link" href="http://localhost:8081/users/feed?pageNumber=0" tabindex="-1">Feed</a>
     </li>
     <li class="nav-item" >
-      <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>
+      <a class="nav-link" href="http://localhost:8081/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>
     </li>
     <li class="nav-item" >
-      <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/tags" tabindex="-1">Tags</a>
+      <a class="nav-link" href="http://localhost:8081/tags" tabindex="-1">Tags</a>
     </li>
     <li class="nav-item" >
-      <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/category" tabindex="-1">Categories</a>
+      <a class="nav-link" href="http://localhost:8081/category" tabindex="-1">Categories</a>
     </li>
     <li class="nav-item" id="signout">
-      <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/logout">Sign Out</a>
+      <a class="nav-link" href="http://localhost:8081/users/logout">Sign Out</a>
     </li>
 
   </ul>
@@ -48,7 +50,7 @@
         xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
       },
       type:'POST',
-      url:"https://ikub-intern-project.herokuapp.com/tags/save",
+      url:"http://localhost:8081/tags/save",
       data:JSON.stringify(req)
     }
     $.ajax(settings).done(function(e){

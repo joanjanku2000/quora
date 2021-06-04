@@ -29,6 +29,7 @@ public class CategoryController {
         UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
         List<CategoryDto> categoryEntityList;
         try{
+            if (!categoryCreateRequest.getName().isEmpty())
             categoryService.saveCategory(categoryCreateRequest,loggedUser);
             categoryEntityList
                     = categoryService.findAll();

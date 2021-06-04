@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Set;
 
@@ -103,7 +104,7 @@ public class GroupController {
         /**
          * Handling of bad page number
          */
-        if (params.getPageNumber()>questions.getTotalPages()-1){
+        if (params.getPageNumber()>questions.getTotalPages()-1 || params.getPageNumber()<0){
             params.setPageNumber(0);
             questions = questionService.findAllInAGroup(params,groupDto.getId());
         }
@@ -129,7 +130,7 @@ public class GroupController {
 
 
     @PostMapping("/new")
-    public ModelAndView save(@ModelAttribute GroupDtoForCreateUpdate groupDto, ModelMap map,HttpSession httpSession){
+    public ModelAndView save(@ModelAttribute GroupDtoForCreateUpdate groupDto, ModelMap map, HttpSession httpSession){
         UserEntity admin = (UserEntity) httpSession.getAttribute("loggedUser");
         groupService.createGroup(admin.getId(),groupDto);
         return new ModelAndView("redirect:/users/groups",map);

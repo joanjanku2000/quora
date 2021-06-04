@@ -9,6 +9,7 @@ import com.ikub.intern.forum.Quora.dto.group.GroupDtoForCreateUpdate;
 import com.ikub.intern.forum.Quora.dto.group.GroupDtoMini;
 import com.ikub.intern.forum.Quora.dto.user.*;
 import com.ikub.intern.forum.Quora.entities.CategoryEntity;
+import com.ikub.intern.forum.Quora.entities.Feed;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.entities.UserGroupEntity;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
@@ -248,7 +249,14 @@ public class UserController {
     @GetMapping("/feed")
     public String displayFeed(HttpSession httpSession, Model model,PageParams params){
         UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
-        model.addAttribute("feed",userService.feed(loggedUser.getId(),params));
+        Page<Feed> feed = userService.feed(loggedUser.getId(),params);
+
+        if (params.getPageNumber()>feed.getTotalPages()-1 || params.getPageNumber()<0){
+            params.setPageNumber(0);
+            feed = userService.feed(loggedUser.getId(),params);
+        }
+        model.addAttribute("feed",feed);
+
         return "feed";
     }
 }

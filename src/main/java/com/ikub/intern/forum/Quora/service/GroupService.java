@@ -45,7 +45,7 @@ public class GroupService {
         }
 
         if (categoryEntity==null) throw new BadRequestException("The category doesn't exist");
-        if (groupRepo.findByGroupName(groupDtoForCreate.getGroupName()).isPresent()){
+        if (groupRepo.findByGroupName(groupDtoForCreate.getGroupName().trim()).isPresent()){
            throw new BadRequestException("A Group with the same name already exists");
         }
         UserGroupEntity groupEntity = GroupConverter.toEntity(groupDtoForCreate,categoryEntity);

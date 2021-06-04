@@ -1,6 +1,8 @@
 <html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title th:text="${group.groupName}"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
     <link href=" https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -17,12 +19,7 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        /*input[type=checkbox] {*/
-        /*    display: inline-block;*/
-        /*    float: left;*/
-        /*}*/
-    </style>
+
     <link rel="stylesheet" href="styles/profile.css">
     <script th:inline="javascript">
 
@@ -32,7 +29,7 @@
             /*<![CDATA[*/
             let groupId = /*[[${group.id}]]*/ 'default';
             /*]]>*/
-            window.location.replace("https://ikub-intern-project.herokuapp.com/groups/" + groupId + "?pageNumber=0&pageSize=" + pageSize);
+            window.location.replace("http://localhost:8081/groups/" + groupId + "?pageNumber=0&pageSize=" + pageSize);
         }
     </script>
     <script th:inline="javascript" >
@@ -70,7 +67,7 @@
                     xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
                 },
                 type:'POST',
-                url:"https://ikub-intern-project.herokuapp.com/questions/new?pageSize="+pageSize,
+                url:"http://localhost:8081/questions/new?pageSize="+pageSize,
                 data:JSON.stringify(questionRequest)
             }
             $.ajax(settings).done(function(result){
@@ -94,7 +91,7 @@
                     xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
                 },
                 type:'POST',
-                url:"https://ikub-intern-project.herokuapp.com/upvotes/"+userId+"/question/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+                url:"http://localhost:8081/upvotes/"+userId+"/question/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
             }
             $.ajax(settings).done(function(e){
                 $('#questions').html(e);
@@ -122,7 +119,7 @@
                     xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
                 },
                 type:'PUT',
-                url:"https://ikub-intern-project.herokuapp.com/questions/update/question/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+                url:"http://localhost:8081/questions/update/question/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
                 data: JSON.stringify(updateRequest)
             };
             console.log(updateRequest);
@@ -146,7 +143,7 @@
                     xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
                 },
                 type:'DELETE',
-                url:"https://ikub-intern-project.herokuapp.com/questions/delete/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
+                url:"http://localhost:8081/questions/delete/"+questionId+"?pageNumber="+pageNumber+"&pageSize="+pageSize,
             }
             $.ajax(settings).done(function(e){
                 $('#questions').html(e);
@@ -162,22 +159,22 @@
             <a class="nav-link " aria-current="page" th:href="@{/users/groups}" > My Groups</a>
         </li>
         <li class="nav-item" >
-            <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/profile" tabindex="-1">Profile</a>
+            <a class="nav-link" href="http://localhost:8081/users/profile" tabindex="-1">Profile</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/feed?pageNumber=0" tabindex="-1">Feed</a>
+            <a class="nav-link" href="http://localhost:8081/users/feed?pageNumber=0" tabindex="-1">Feed</a>
         </li>
         <li class="nav-item" >
-            <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>
+            <a class="nav-link" href="http://localhost:8081/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>
         </li>
         <li class="nav-item" >
-            <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/tags" tabindex="-1">Tags</a>
+            <a class="nav-link" href="http://localhost:8081/tags" tabindex="-1">Tags</a>
         </li>
         <li class="nav-item" >
-            <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/category" tabindex="-1">Categories</a>
+            <a class="nav-link" href="http://localhost:8081/category" tabindex="-1">Categories</a>
         </li>
         <li class="nav-item" id="signout">
-            <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/logout">Sign Out</a>
+            <a class="nav-link" href="http://localhost:8081/users/logout">Sign Out</a>
         </li>
 
     </ul>
@@ -216,6 +213,7 @@
                     <div class="row">
                         <div class="col align-self-start" th:if="${group.userIsPartOfTheGroup(loggedUser.username)==true}">
                             <textarea rows="2" cols="36" class="form-control" maxlength="255" style="resize: none"  required data-target="#askQuestion" data-toggle="modal" ></textarea>
+
                         </div>
                     </div>
                     <div class="row">
@@ -236,6 +234,7 @@
                 </select>
             </div>
             <div th:fragment="questions" id="questions">
+                <p th:if="${error !=null}" th:text="${error}" style="color: red"></p>
             <div th:each="question : ${questions.content}" >
                 <div class="panel panel-default">
                     <div class="panel-body">

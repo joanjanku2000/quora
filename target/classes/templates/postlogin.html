@@ -15,9 +15,12 @@
   <form method="POST" th:action="@{/users/postlogin}" th:object="${userDTO}">
     <label class="col-form-label" >Username</label>
     <input type="text" placeholder="Username" required class="form-control" th:field="*{username}">
+    <div th:if="${usernameError !=null}">
+      <p style="color:red" th:text="${usernameError}" ></p>
+    </div>
     <br>
     <label for="birthday" class="col-form-label">Birthday</label>
-    <input type="date" th:field="*{birthday}" th:value="*{birthday}"  class="form-control" id="birthday"  >
+    <input type="date" th:field="*{birthday}" th:value="*{birthday}"  class="form-control" id="birthday"  required>
     <label class="col-form-label">Gender</label>
     <div><input type="radio" name="gender" th:value="male" checked="checked" />Male</div>
     <div><input type="radio" name="gender" th:value="female" />Female</div>
