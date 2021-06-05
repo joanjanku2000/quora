@@ -38,8 +38,8 @@ public class ReplyService {
     @Autowired
     private QuestionsRepo questionRepo;
 
-
     private static final Logger logger = LoggerFactory.getLogger(ReplyService.class);
+
     public boolean userIsPartOfTheGroup(UserEntity user, UserGroupEntity groupEntity){
         List<UserEntity> userEntityList = userRepo.findUsersInGroup(groupEntity.getId());
         for (UserEntity u : userEntityList){

@@ -7,11 +7,14 @@ import com.ikub.intern.forum.Quora.repository.ReplyRepo;
 import com.ikub.intern.forum.Quora.repository.UpvoteQuestionRepo;
 import com.ikub.intern.forum.Quora.repository.UpvotesReplyRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UpvotesService {
@@ -25,7 +28,7 @@ public class UpvotesService {
     private QuestionsRepo questionRepo;
     @Autowired
     private ReplyRepo repliesRepo;
-
+    private static final Logger logger = LoggerFactory.getLogger(UpvotesService.class);
     public boolean isUserGroupMember(UserEntity user,QuestionEntity questionEntity){
         List<UserGroupEntity> userGroupEntities = userRepo.findGroupsOfUser(user.getId());
         for (UserGroupEntity group : userGroupEntities){
@@ -43,12 +46,17 @@ public class UpvotesService {
         return false;
     }
     public void upvoteQuestion(Long uid,Long questionId){
-        UserEntity user = userRepo.findById(uid).orElse(null);
-
-        QuestionEntity questionEntity = questionRepo.findById(questionId).orElse(null);
-        if (user==null) throw new BadRequestException("User does not exist");
-        if (questionEntity == null) throw new BadRequestException("Question does not exist");
-        if (!isUserGroupMember(user,questionEntity)) throw new BadRequestException("User not allowed to upvote");
+        Optional<UserEntity> user = userRepo.findById(uid);
+        Optional<QuestionEntity> questionEntity = questionRepo.findById(questionId);
+        if (!user.isPresent()) {
+            throw new BadRequestException("User does not exist");
+        }
+        if (!questionEntity.isPresent()) {
+            throw new BadRequestException("Question does not exist");
+        }
+        if (!isUserGroupMember(user.get(),questionEntity.get())) {
+            throw new BadRequestException("User not allowed to upvote");
+        }
         UpvotesQuestion upvotesQuestion
                 = questionUpvotesRepo.findByQuestionIdAndUserId(questionId,uid).orElse(null);
        if (upvotesQuestion!=null){
@@ -61,7 +69,7 @@ public class UpvotesService {
            }
 
        } else {
-           upvotesQuestion  = new UpvotesQuestion(user,true, LocalDateTime.now(),questionEntity);
+           upvotesQuestion  = new UpvotesQuestion(user.get(),true, LocalDateTime.now(),questionEntity.get());
        }
 
         questionUpvotesRepo.save(upvotesQuestion);

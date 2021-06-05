@@ -5,17 +5,12 @@ import com.ikub.intern.forum.Quora.converter.QuestionConverter;
 import com.ikub.intern.forum.Quora.converter.ReplyConverter;
 import com.ikub.intern.forum.Quora.dto.group.GroupDtoForCreateUpdate;
 import com.ikub.intern.forum.Quora.dto.question.QuestionCreateRequest;
-import com.ikub.intern.forum.Quora.dto.reply.ReplyDto;
 import com.ikub.intern.forum.Quora.dto.reply.ReplyRequest;
 import com.ikub.intern.forum.Quora.entities.*;
-
-import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
-import com.ikub.intern.forum.Quora.exceptions.NotFoundException;
 import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
 import com.ikub.intern.forum.Quora.repository.ReplyRepo;
-
+import com.ikub.intern.forum.Quora.repository.UpvoteQuestionRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,15 +26,17 @@ import java.util.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ReplyTests {
+public class UpvotesTest {
     @Mock
     private ReplyRepo replyRepo;
+    @Mock
+    private UpvoteQuestionRepo upvoteQuestionRepo;
     @Mock
     private UserRepo userRepo;
     @Mock
     private QuestionsRepo questionsRepo;
     @InjectMocks
-    private ReplyService replyService;
+    private UpvotesService upvotesService;
 
     static CategoryEntity categoryEntity;
     static UserEntity userEntity;
@@ -57,6 +54,7 @@ public class ReplyTests {
     static TagEntity tagEntity2;
     static ReplyEntity replyEntity;
     static ReplyRequest replyRequest;
+    static UpvotesQuestion upvotesQuestion;
     @BeforeAll
     static void  initialize(){
         userEntity = new UserEntity("test","test","test",
@@ -91,56 +89,23 @@ public class ReplyTests {
         userGroupEntity.setQuestions(questionEntitySet);
         questionEntity = QuestionConverter.toEntity(questionCreateRequest,userGroupEntity,userEntity,tagEntities);
         replyEntity = ReplyConverter.toEntity(replyRequest,userEntity,questionEntity);
+        upvotesQuestion
+                = new UpvotesQuestion(userEntity,true,
+                LocalDateTime.of(2021,4,5,5,5),questionEntity);
     }
 
     @Test
-    @DisplayName("Reply save success")
+    @DisplayName("Save success")
     void save(){
-        when(userRepo.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
-        when(questionsRepo.findById(questionEntity.getId())).thenReturn(Optional.of(questionEntity));
-        when(userRepo.findUsersInGroup(questionEntity.getGroup().getId())).thenReturn(Arrays.asList(userEntity,userEntity2));
-        replyService.save(userEntity.getId(),questionEntity.getId(),replyRequest);
-        verify(replyRepo,times(1)).save(any(ReplyEntity.class));
-    }
-    @Test
-    @DisplayName("Reply save fail:user not found")
-    void saveFail1(){
-        Assertions.assertThrows(NotFoundException.class,
-                ()->replyService.save(userEntity.getId(),questionEntity.getId(),replyRequest));
-    }
-    @Test
-    @DisplayName("Reply save fail:question not found")
-    void saveFail2(){
-        when(userRepo.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
-        Assertions.assertThrows(NotFoundException.class,
-                ()->replyService.save(userEntity.getId(),questionEntity.getId(),replyRequest));
-    }
-    @Test
-    @DisplayName("Reply save fail:User not allowed to reply")
-    void saveFail3(){
-        when(userRepo.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
-        when(questionsRepo.findById(questionEntity.getId())).thenReturn(Optional.of(questionEntity));
-        Assertions.assertThrows(NotAllowedException.class,
-                ()->replyService.save(userEntity.getId(),questionEntity.getId(),replyRequest));
-    }
-    @Test
-    @DisplayName("Update save Fail:user not allowed")
-    void update(){
-        when(userRepo.findById(userEntity.getId())).thenReturn(Optional.of(userEntity2));
-        when(replyRepo.findById(replyEntity.getId())).thenReturn(Optional.ofNullable(replyEntity)) ;
-
-        Assertions.assertThrows(NotAllowedException.class,
-                () -> replyService.update(userEntity.getId(),replyEntity.getId(),replyRequest));
+        when(userRepo.findById(userEntity.getId())).thenReturn(Optional.ofNullable(userEntity));
+        when(questionsRepo.findById(questionEntity.getId())).thenReturn(Optional.ofNullable(questionEntity));
+        when(userRepo.findGroupsOfUser(userEntity.getId())).thenReturn(Arrays.asList(userGroupEntity));
+        when(upvoteQuestionRepo.findByQuestionIdAndUserId(questionEntity.getId()
+                ,userEntity.getId())).thenReturn(Optional.ofNullable(upvotesQuestion));
+        upvotesService.upvoteQuestion(userEntity.getId(),questionEntity.getId());
+        verify(upvoteQuestionRepo,times(1)).save(upvotesQuestion);
     }
 
-    @Test
-    @DisplayName("Delete Fail:user not allowed")
-    void delete(){
-        when(userRepo.findById(userEntity.getId())).thenReturn(Optional.of(userEntity2));
-        when(replyRepo.findById(replyEntity.getId())).thenReturn(Optional.ofNullable(replyEntity)) ;
 
-        Assertions.assertThrows(NotAllowedException.class,
-                () -> replyService.deleteReply(userEntity.getId(),replyEntity.getId()));
-    }
 
 }
