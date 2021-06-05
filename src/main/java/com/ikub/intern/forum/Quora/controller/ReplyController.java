@@ -52,8 +52,8 @@ public class ReplyController {
     @PutMapping("/{id}")
     public String updateReply(@PathVariable Long id, @Valid @RequestBody ReplyRequest replyRequest, ModelMap model, PageParams params, HttpSession httpSession){
         Long questionId = (Long) httpSession.getAttribute("question");
-        replyService.update(id,replyRequest);
         UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");
+        replyService.update(user.getId(),id,replyRequest);
         QuestionDto questionDto = questionService.findById(user.getId(),questionId);
 
         Page<ReplyDto> replyDtos = replyService.getRepliesOfQuestion(questionId,params);
@@ -71,7 +71,7 @@ public class ReplyController {
     public String delete(@PathVariable Long id,ModelMap model,PageParams params,HttpSession httpSession){
         Long questionId = (Long) httpSession.getAttribute("question");
         UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
-        replyService.deleteReply(id);
+        replyService.deleteReply(userEntity.getId(),id);
 
         Page<ReplyDto> replyDtos = replyService.getRepliesOfQuestion(questionId,params);
         if (params.getPageNumber()>replyDtos.getTotalPages()){

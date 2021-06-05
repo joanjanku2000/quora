@@ -8,12 +8,14 @@ import com.ikub.intern.forum.Quora.entities.ReplyEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.entities.UserGroupEntity;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
+import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
 import com.ikub.intern.forum.Quora.exceptions.NotFoundException;
 import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
 import com.ikub.intern.forum.Quora.repository.ReplyRepo;
 import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
 import com.ikub.intern.forum.Quora.utils.PageParams;
+import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +37,7 @@ public class ReplyService {
     private UserRepo userRepo;
     @Autowired
     private QuestionsRepo questionRepo;
-    @Autowired
-    private UserGroupRepo groupRepo;
+
 
     private static final Logger logger = LoggerFactory.getLogger(ReplyService.class);
     public boolean userIsPartOfTheGroup(UserEntity user, UserGroupEntity groupEntity){
@@ -49,32 +50,52 @@ public class ReplyService {
     public void save(Long userId, Long questionId, ReplyRequest request){
         logger.info("Adding reply of user with id {} to question with id {} , reply {}"
                 ,userId,questionId,request.getReply());
-        UserEntity userWhoReplied = userRepo.findById(userId).orElse(null);
-        QuestionEntity questionToBeReplied = questionRepo.findById(questionId).orElse(null);
-        if (userWhoReplied==null ) throw new BadRequestException("User does not exist");
-        if (questionToBeReplied==null) throw new BadRequestException("Question does not exist");
-        if (!userIsPartOfTheGroup(userWhoReplied,questionToBeReplied.getGroup())){
-            throw new BadRequestException("This user isn't part of the group");
+        Optional<UserEntity> userWhoReplied = userRepo.findById(userId);
+        Optional<QuestionEntity> questionToBeReplied = questionRepo.findById(questionId);
+        if (!userWhoReplied.isPresent()) {
+            throw new NotFoundException("User does not exist");
         }
-        ReplyEntity reply = ReplyConverter.toEntity(request,userWhoReplied,questionToBeReplied);
+        if (!questionToBeReplied.isPresent()) {
+            throw new NotFoundException("Question does not exist");
+        }
+        if (!userIsPartOfTheGroup(userWhoReplied.get(),questionToBeReplied.get().getGroup())){
+            throw new NotAllowedException("This user isn't part of the group");
+        }
+        ReplyEntity reply = ReplyConverter.toEntity(request,userWhoReplied.get(),questionToBeReplied.get());
         replyRepo.save(reply);
         logger.info("Added successfully");
     }
-    public void update(Long replyId ,ReplyRequest request){
-        ReplyEntity reply = replyRepo.findById(replyId).orElse(null);
-        if (reply == null) throw new BadRequestException("Reply doesn't exist");
+    public void update(Long uid,Long replyId ,ReplyRequest request){
+        Optional<ReplyEntity> reply = replyRepo.findById(replyId);
+        Optional<UserEntity> user = userRepo.findById(uid);
+        if (!reply.isPresent()) {
+            logger.info("Reply {} not found",replyId);
+            throw new BadRequestException("Reply doesn't exist");
+        }
+        if (reply.get().getUser().getId()!=user.get().getId()){
+            logger.info("User {} not allowed to update reply {} ",uid,replyId);
+            throw new NotAllowedException("You are not allowed to update this question");
+        }
         logger.info("Updating reply {}",reply);
-        reply.setReply(request.getReply());
-        reply.setUpdatedAt(LocalDateTime.now());
-        replyRepo.save(reply);
+        reply.get().setReply(request.getReply());
+        reply.get().setUpdatedAt(LocalDateTime.now());
+        replyRepo.save(reply.get());
         logger.info("Update successful");
     }
-    public void deleteReply(Long replyId){
-        ReplyEntity reply = replyRepo.findById(replyId).orElse(null);
-        if (reply == null) throw new BadRequestException("Reply doesn't exist");
+    public void deleteReply(Long uid,Long replyId){
+        Optional<ReplyEntity> reply = replyRepo.findById(replyId);
+        Optional<UserEntity> user = userRepo.findById(uid);
+        if (!reply.isPresent()){
+            logger.info("Reply {} not found",replyId);
+            throw new BadRequestException("Reply doesn't exist");
+        }
+        if (reply.get().getUser().getId()!=user.get().getId()){
+            logger.info("User {} not allowed to delete reply {} ",uid,replyId);
+            throw new NotAllowedException("You are not allowed to update this question");
+        }
         logger.info("Deleting reply {}",reply);
-        reply.setActive(false);
-        replyRepo.save(reply);
+        reply.get().setActive(false);
+        replyRepo.save(reply.get());
         logger.info("Deletion successful");
     }
     public ReplyDto findById(Long id){
@@ -82,6 +103,7 @@ public class ReplyService {
         if (!replyEntity.isPresent()){
             throw new NotFoundException("Reply Not Found") ;
         }
+        logger.info("Succes on find by id {} "+replyEntity);
         return ReplyConverter.entityToDto(replyEntity.get());
     }
     public Page<ReplyDto> getRepliesOfQuestion(Long id, PageParams pageParams){
