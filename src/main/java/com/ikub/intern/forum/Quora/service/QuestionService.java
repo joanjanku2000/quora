@@ -15,12 +15,15 @@ import com.ikub.intern.forum.Quora.repository.TagRepo;
 import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
 import com.ikub.intern.forum.Quora.utils.PageParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,56 +37,65 @@ public class QuestionService {
     private UserGroupRepo groupRepo;
     @Autowired
     private TagRepo tagRepo;
+    private static final Logger logger = LoggerFactory.getLogger(QuestionService.class);
 
-    public void newQuestion(QuestionCreateRequest questionCreateRequest){
-        UserEntity userEntity = userRepo.findById(questionCreateRequest.getUserId())
-                .orElse(null);
-        UserGroupEntity userGroupEntity = groupRepo.findById(questionCreateRequest.getGroupId())
-                .orElse(null);
-        if (userEntity==null ){
+    public QuestionEntity newQuestion(QuestionCreateRequest questionCreateRequest){
+        logger.info("Saving question {}",questionCreateRequest);
+        Optional<UserEntity> userEntity = userRepo.findById(questionCreateRequest.getUserId());
+        Optional<UserGroupEntity> userGroupEntity = groupRepo.findById(questionCreateRequest.getGroupId());
+        if (!userEntity.isPresent() ){
             throw new BadRequestException("The user does not exist");
         }
-        if (userGroupEntity==null){
+        if (!userGroupEntity.isPresent()){
             throw new BadRequestException("The Group does not exist");
         }
-        if (!userIsPartOfTheGroup(userEntity,userGroupEntity)){
+        if (!userIsPartOfTheGroup(userEntity.get(),userGroupEntity.get())){
             throw new NotAllowedException("The user isn't part of the group");
         }
         Set<TagEntity> tagEntities = new HashSet<>();
         for(Long tag : questionCreateRequest.getTags()){
             Optional<TagEntity> tagEntity = tagRepo.findById(tag);
-            if (tagEntity.isPresent()){
-                tagEntities.add(tagEntity.get());
-            }
+            tagEntity.ifPresent(tagEntities::add);
         }
         QuestionEntity question
-                = QuestionConverter.toEntity(questionCreateRequest,userGroupEntity,userEntity,tagEntities);
-        if (question.getTagList() != null && !question.getTagList().isEmpty()){
-            List<Long> tagIds = questionCreateRequest.getTags();
-            Set<TagEntity> tagEntitySet = new HashSet<>();
-            for (Long tagId : tagIds){
-                TagEntity tagEntity = tagRepo.findById(tagId).orElse(null);
-                if (tagEntity!=null) tagEntitySet.add(tagEntity);
-            }
-            question.setTagList(tagEntitySet);
-        }
-        questionsRepo.save(question);
+                = QuestionConverter.toEntity(questionCreateRequest,userGroupEntity.get(),userEntity.get(),tagEntities);
+//        if (question.getTagList() != null && !question.getTagList().isEmpty()){
+//            List<Long> tagIds = questionCreateRequest.getTags();
+//            Set<TagEntity> tagEntitySet = new HashSet<>();
+//            for (Long tagId : tagIds){
+//                Optional<TagEntity> tagEntity = tagRepo.findById(tagId);
+//                tagEntity.ifPresent(tagEntitySet::add);
+//            }
+//            question.setTagList(tagEntitySet);
+//        }
+        logger.info("Save succes  {} ",question.getQuestion());
+        return questionsRepo.save(question);
     }
-    public QuestionDto findById(Long id){
+    public QuestionDto findById(Long userId,Long id){
         Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
+        Optional<UserEntity> loggedUser = userRepo.findById(userId);
         if (!questionEntity.isPresent()){
             throw new NotFoundException("Question not found");
         }
-        if (!userIsPartOfTheGroup(LoggedUser.getLoggedUser(),questionEntity.get().getGroup())){
+        if (!userIsPartOfTheGroup(loggedUser.get(),questionEntity.get().getGroup())){
             throw new NotAllowedException(" You are not allowed to see this question");
         }
+        logger.info("Found question  {} ",questionEntity.get().getQuestion());
         return QuestionConverter.entityToDto(questionEntity.get());
     }
     public Page<QuestionDto> findAllInAGroup(PageParams pageParams,Long id){
-        if (pageParams==null) pageParams=new PageParams();
+        Optional<UserGroupEntity> userGroupEntity = groupRepo.findById(id);
+        if (!userGroupEntity.isPresent()){
+            throw new NotFoundException("Group with id "+id+" wasn't found");
+        }
+        if (pageParams==null) {
+            pageParams=new PageParams();
+        }
         pageParams.setSort(Sort.Direction.DESC);
         pageParams.setSortField("date");
-        return QuestionConverter.entityPageToDtoPage(questionsRepo.findAllByGroupId(id, PageRequest.of(pageParams.getPageNumber(),pageParams.getPageSize()
+        logger.info("Finding all questions in group {} ",userGroupEntity.get().getGroupName());
+        return QuestionConverter.entityPageToDtoPage(questionsRepo.findAllByGroupId(id,
+                PageRequest.of(pageParams.getPageNumber(),pageParams.getPageSize()
                 ,pageParams.getSort(),pageParams.getSortField())));
     }
     private boolean userIsPartOfTheGroup(UserEntity user, UserGroupEntity groupEntity){
@@ -93,23 +105,26 @@ public class QuestionService {
         }
         return false;
     }
-    public Page<QuestionEntity> findALl(PageParams pageParams){
-        return questionsRepo.findAll(PageRequest.of(pageParams.getPageNumber(),pageParams.getPageSize()));
-    }
+
     public void deleteQuestion(Long id){
-        QuestionEntity questionEntity = questionsRepo.findById(id)
-                .orElse(null);
-        if (questionEntity==null) throw new BadRequestException("Question does not exist");
-        questionEntity.setActive(false);
-        questionsRepo.save(questionEntity);
+        Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
+        if (!questionEntity.isPresent()) {
+            throw new NotFoundException("Question does not exist");
+        }
+        questionEntity.get().setActive(false);
+        logger.info("Deleting question  {} ",questionEntity.get().isActive());
+        questionsRepo.save(questionEntity.get());
     }
     public void updateQuestion(Long id, QuestionUpdateRequest requestForUpdate){
-        System.out.println("FNIN");
-        Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
 
-        if (!questionEntity.isPresent()) throw new BadRequestException("Question does not exist");
+        Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
+        if (!questionEntity.isPresent()) {
+            throw new NotFoundException("Question does not exist");
+        }
+        logger.info("Updating question  {} ",questionEntity.get().getQuestion());
         questionEntity.get().setQuestion(requestForUpdate.getQuestion());
         questionEntity.get().setUpdatedAt(LocalDateTime.now());
+        logger.info("Updated question to {} ",questionEntity.get().getQuestion());
         questionsRepo.save(questionEntity.get());
     }
 

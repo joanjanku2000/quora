@@ -76,7 +76,7 @@ public class QuestionController {
         httpSession.setAttribute("question",id);
 
         UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
-        QuestionDto questionDto =  questionService.findById(id);
+        QuestionDto questionDto =  questionService.findById(loggedUser.getId(),id);
         ModelAndView modelAndView = new ModelAndView("question");
 
 
@@ -95,10 +95,6 @@ public class QuestionController {
         modelAndView.addObject("replies",replyDtos);
         modelAndView.addObject("pageSize",params.getPageSize());
         return modelAndView;
-    }
-    @GetMapping("/all")
-    public Page<QuestionEntity> findAll(PageParams pageParams){
-        return questionService.findALl(pageParams);
     }
 
     @PutMapping("/update/question/{id}")

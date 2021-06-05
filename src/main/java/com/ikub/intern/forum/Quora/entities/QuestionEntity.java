@@ -44,8 +44,6 @@ public class QuestionEntity {
             joinColumns = @JoinColumn(name = "id_question"),
             inverseJoinColumns = @JoinColumn(name = "id_tag")
     )
-    // ki parasysh dto per ta hequr
-    //@JsonIgnoreProperties("question")
     private Set<TagEntity> tagList;
 
     @OneToMany(fetch = FetchType.EAGER)

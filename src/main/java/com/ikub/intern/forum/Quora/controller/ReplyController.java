@@ -40,7 +40,7 @@ public class ReplyController {
         else
             model.addAttribute("error","Please don't leave an empty body");
         UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");
-        QuestionDto questionDto = questionService.findById(questionId);
+        QuestionDto questionDto = questionService.findById(user.getId(),questionId);
         Page<ReplyDto> replies = replyService.getRepliesOfQuestion(questionId,params);
 
         model.addAttribute("replies",replies);
@@ -54,7 +54,7 @@ public class ReplyController {
         Long questionId = (Long) httpSession.getAttribute("question");
         replyService.update(id,replyRequest);
         UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");
-        QuestionDto questionDto = questionService.findById(questionId);
+        QuestionDto questionDto = questionService.findById(user.getId(),questionId);
 
         Page<ReplyDto> replyDtos = replyService.getRepliesOfQuestion(questionId,params);
         if (params.getPageNumber()>replyDtos.getTotalPages()){
@@ -78,7 +78,7 @@ public class ReplyController {
             params.setPageNumber(0);
             replyDtos = replyService.getRepliesOfQuestion(questionId,params);
         }
-        QuestionDto questionDto = questionService.findById(questionId);
+        QuestionDto questionDto = questionService.findById(userEntity.getId(),questionId);
 
         model.addAttribute("questionDto",questionDto);
         model.addAttribute("user", userEntity);
