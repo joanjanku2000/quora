@@ -43,14 +43,6 @@ public class UpvotesController {
     public void upvoteReply(@PathVariable Long uid,@PathVariable Long replyId){
         service.upvoteReply(uid,replyId);
     }
-    @DeleteMapping("/question/delete/{id}")
-    public void deleteUpvote(@PathVariable Long id){
-        service.deleteUpvoteQuestion(id);
-    }
-    @DeleteMapping("/reply/delete/{id}")
-    public void deleteReply(@PathVariable Long id){
-        service.deleteUpvoteReply(id);
-    }
 
     @GetMapping("/question/{id}")
     public List<UpvotesQuestion> getUpvotesOfQuestion(@PathVariable Long id){

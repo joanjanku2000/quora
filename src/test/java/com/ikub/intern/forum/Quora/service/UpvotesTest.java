@@ -7,10 +7,13 @@ import com.ikub.intern.forum.Quora.dto.group.GroupDtoForCreateUpdate;
 import com.ikub.intern.forum.Quora.dto.question.QuestionCreateRequest;
 import com.ikub.intern.forum.Quora.dto.reply.ReplyRequest;
 import com.ikub.intern.forum.Quora.entities.*;
+import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
+import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
 import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
 import com.ikub.intern.forum.Quora.repository.ReplyRepo;
 import com.ikub.intern.forum.Quora.repository.UpvoteQuestionRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -106,6 +109,28 @@ public class UpvotesTest {
         verify(upvoteQuestionRepo,times(1)).save(upvotesQuestion);
     }
 
+    @Test
+    @DisplayName("Save fail: user not found")
+    void saveFail1(){
+        Assertions.assertThrows(BadRequestException.class,
+                () -> upvotesService.upvoteQuestion(userEntity.getId(),questionEntity.getId()));
+    }
 
+    @Test
+    @DisplayName("Save fail: question not found")
+    void saveFail2(){
+        when(userRepo.findById(userEntity.getId())).thenReturn(Optional.ofNullable(userEntity));
+        Assertions.assertThrows(BadRequestException.class,
+                () -> upvotesService.upvoteQuestion(userEntity.getId(),questionEntity.getId()));
+    }
 
+    @Test
+    @DisplayName("Save fail: user not a member")
+    void saveFail3(){
+        when(userRepo.findById(userEntity.getId())).thenReturn(Optional.ofNullable(userEntity));
+        when(questionsRepo.findById(questionEntity.getId())).thenReturn(Optional.ofNullable(questionEntity));
+        when(userRepo.findGroupsOfUser(userEntity.getId())).thenReturn(Arrays.asList(new UserGroupEntity()));
+        Assertions.assertThrows(NotAllowedException.class,
+                () -> upvotesService.upvoteQuestion(userEntity.getId(),questionEntity.getId()));
+    }
 }

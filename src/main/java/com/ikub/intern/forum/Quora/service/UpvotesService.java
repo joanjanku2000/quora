@@ -2,6 +2,7 @@ package com.ikub.intern.forum.Quora.service;
 
 import com.ikub.intern.forum.Quora.entities.*;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
+import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
 import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
 import com.ikub.intern.forum.Quora.repository.ReplyRepo;
 import com.ikub.intern.forum.Quora.repository.UpvoteQuestionRepo;
@@ -48,6 +49,7 @@ public class UpvotesService {
     public void upvoteQuestion(Long uid,Long questionId){
         Optional<UserEntity> user = userRepo.findById(uid);
         Optional<QuestionEntity> questionEntity = questionRepo.findById(questionId);
+        logger.info("Upvoting question {} by user {}"+questionId,uid);
         if (!user.isPresent()) {
             throw new BadRequestException("User does not exist");
         }
@@ -55,15 +57,16 @@ public class UpvotesService {
             throw new BadRequestException("Question does not exist");
         }
         if (!isUserGroupMember(user.get(),questionEntity.get())) {
-            throw new BadRequestException("User not allowed to upvote");
+            throw new NotAllowedException("User not allowed to upvote");
         }
         UpvotesQuestion upvotesQuestion
                 = questionUpvotesRepo.findByQuestionIdAndUserId(questionId,uid).orElse(null);
        if (upvotesQuestion!=null){
-           if (upvotesQuestion.isActive())
+           if (upvotesQuestion.isActive()) {
+               logger.info("Upvoting already exists, removing it");
                upvotesQuestion.setActive(false);
-           else
-           {
+           }
+           else {
                upvotesQuestion.setActive(true);
                upvotesQuestion.setUpvoteDate(LocalDateTime.now());
            }
@@ -71,52 +74,54 @@ public class UpvotesService {
        } else {
            upvotesQuestion  = new UpvotesQuestion(user.get(),true, LocalDateTime.now(),questionEntity.get());
        }
-
+        logger.info("Upvoting done");
         questionUpvotesRepo.save(upvotesQuestion);
 
     }
     public void upvoteReply(Long uid,Long replyId){
-        UserEntity user = userRepo.findById(uid).orElse(null);
-        ReplyEntity replyEntity = repliesRepo.findById(replyId).orElse(null);
-        if (user==null) throw new BadRequestException("User does not exist");
-        if (replyEntity == null) throw new BadRequestException("Reply does not exist");
-        if (!isUserGroupMember(user, replyEntity)) throw new BadRequestException("User not allowed to upvote");
+        Optional<UserEntity> user = userRepo.findById(uid);
+        Optional<ReplyEntity> replyEntity = repliesRepo.findById(replyId);
+        logger.info("Upvoting reply {} by user {}"+replyId,uid);
+        if (!user.isPresent()) {
+            throw new BadRequestException("User does not exist");
+        }
+        if (!replyEntity.isPresent()) {
+            throw new BadRequestException("Reply does not exist");
+        }
+        if (!isUserGroupMember(user.get(), replyEntity.get())) {
+            throw new BadRequestException("User not allowed to upvote");
+        }
         UpvotesReply upvotesReply = replyUpvotesRepo.findByReplyIdAndUserId(replyId,uid).orElse(null);
         if (upvotesReply!=null){
-            if (upvotesReply.isActive())
+            if (upvotesReply.isActive()) {
                 upvotesReply.setActive(false);
+                logger.info("Upvoting already exists, removing it");
+            }
             else{
                 upvotesReply.setActive(true);
                 upvotesReply.setUpvoteDate(LocalDateTime.now());
             }
         } else{
-            upvotesReply = new UpvotesReply(user,true, LocalDateTime.now(), replyEntity);
+            upvotesReply = new UpvotesReply(user.get(),true, LocalDateTime.now(), replyEntity.get());
         }
-
-
+        logger.info("Upvoting done");
         replyUpvotesRepo.save(upvotesReply);
     }
-    public void deleteUpvoteQuestion(Long id){
-        UpvotesQuestion upvotesQuestion = questionUpvotesRepo.findById(id).orElse(null);
-        if (upvotesQuestion==null) throw new BadRequestException("Reply does not exist");
-        upvotesQuestion.setActive(false);
-        questionUpvotesRepo.save(upvotesQuestion);
 
-    }
-    public void deleteUpvoteReply(Long id){
-        UpvotesReply upvotesReply = replyUpvotesRepo.findById(id).orElse(null);
-        if (upvotesReply ==null) throw new BadRequestException("Reply does not exist");
-        upvotesReply.setActive(false);
-        replyUpvotesRepo.save(upvotesReply);
-    }
     public List<UpvotesQuestion>  getUpvotesOfQuestion(Long id){
-        QuestionEntity questionEntity = questionRepo.findById(id).orElse(null);
-        if (questionEntity==null) throw new BadRequestException("Question does not exist");
+        Optional<QuestionEntity> questionEntity = questionRepo.findById(id);
+        if (!questionEntity.isPresent()){
+            throw new BadRequestException("Question does not exist");
+        }
+        logger.info("Finding upvotes of {} "+questionEntity);
         return questionUpvotesRepo.findAllByQuestionId(id);
     }
     public List<UpvotesReply>  getUpvotesOfReply(Long id){
-        ReplyEntity replyEntity = repliesRepo.findById(id).orElse(null);
-        if (replyEntity ==null) throw new BadRequestException("Reply does not exist");
+        Optional<ReplyEntity> replyEntity = repliesRepo.findById(id);
+        if (!replyEntity.isPresent()) {
+            throw new BadRequestException("Reply does not exist");
+        }
+        logger.info("Finding upvotes of {} "+replyEntity);
         return replyUpvotesRepo.findAllByReplyId(id);
     }
 }
