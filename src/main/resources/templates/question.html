@@ -40,6 +40,9 @@
     function postReply(){
       var replyRequest = {};
       replyRequest.reply = $('#reply').val();
+      if (replyRequest.reply===""){
+        return;
+      }
       /*<![CDATA[*/
       let userId = /*[[${user.id}]]*/'default';
       let questionId = /*[[${questionDto.id}]]*/'default';
@@ -79,6 +82,10 @@
       let pageNumber = currentUrl.searchParams.get("pageNumber");
       let id = "updatedReply"+replyId;
       let textArea = document.getElementById(id).value;
+
+      if (textArea===""){
+        return;
+      }
       let replyRequest = {};
       replyRequest.reply = textArea;
 

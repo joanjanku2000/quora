@@ -44,18 +44,21 @@
   let saveTag = () => {
     let req = {};
     req.tagName = document.getElementById("name").value;
-    let settings = {
-      beforeSend: function(xhr,options)
-      {
-        xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
-      },
-      type:'POST',
-      url:"http://localhost:8081/tags/save",
-      data:JSON.stringify(req)
+    if (req.tagName!==""){
+      let settings = {
+        beforeSend: function(xhr,options)
+        {
+          xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+        },
+        type:'POST',
+        url:"http://localhost:8081/tags/save",
+        data:JSON.stringify(req)
+      }
+      $.ajax(settings).done(function(e){
+        $('#tags').html(e);
+      });
     }
-    $.ajax(settings).done(function(e){
-      $('#tags').html(e);
-    });
+
   }
 </script>
 <div class="container">

@@ -35,13 +35,19 @@ public class ReplyController {
     public String saveReply(@PathVariable Long uid, @PathVariable Long questionId,
                            @Valid @RequestBody ReplyRequest replyRequest,
                             ModelMap model,PageParams params,HttpSession httpSession){
-        if (!replyRequest.getReply().isEmpty())
+        if (!replyRequest.getReply().isEmpty()){
             replyService.save(uid,questionId,replyRequest);
-        else
+        }
+        else{
             model.addAttribute("error","Please don't leave an empty body");
-        UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");
-        QuestionDto questionDto = questionService.findById(user.getId(),questionId);
-        Page<ReplyDto> replies = replyService.getRepliesOfQuestion(questionId,params);
+        }
+
+        UserEntity user =
+                (UserEntity) httpSession.getAttribute("loggedUser");
+        QuestionDto questionDto
+                = questionService.findById(user.getId(),questionId);
+        Page<ReplyDto> replies
+                = replyService.getRepliesOfQuestion(questionId,params);
 
         model.addAttribute("replies",replies);
         model.addAttribute("pageSize",params.getPageSize());
@@ -51,12 +57,17 @@ public class ReplyController {
     }
     @PutMapping("/{id}")
     public String updateReply(@PathVariable Long id, @Valid @RequestBody ReplyRequest replyRequest, ModelMap model, PageParams params, HttpSession httpSession){
-        Long questionId = (Long) httpSession.getAttribute("question");
-        UserEntity user =  (UserEntity) httpSession.getAttribute("loggedUser");
-        replyService.update(user.getId(),id,replyRequest);
-        QuestionDto questionDto = questionService.findById(user.getId(),questionId);
+        Long questionId
+                = (Long) httpSession.getAttribute("question");
+        UserEntity user
+                =  (UserEntity) httpSession.getAttribute("loggedUser");
 
-        Page<ReplyDto> replyDtos = replyService.getRepliesOfQuestion(questionId,params);
+        replyService.update(user.getId(),id,replyRequest);
+        QuestionDto questionDto
+                = questionService.findById(user.getId(),questionId);
+
+        Page<ReplyDto> replyDtos
+                = replyService.getRepliesOfQuestion(questionId,params);
         if (params.getPageNumber()>replyDtos.getTotalPages()){
             params.setPageNumber(0);
             replyDtos = replyService.getRepliesOfQuestion(questionId,params);
@@ -73,7 +84,8 @@ public class ReplyController {
         UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
         replyService.deleteReply(userEntity.getId(),id);
 
-        Page<ReplyDto> replyDtos = replyService.getRepliesOfQuestion(questionId,params);
+        Page<ReplyDto> replyDtos
+                = replyService.getRepliesOfQuestion(questionId,params);
         if (params.getPageNumber()>replyDtos.getTotalPages()){
             params.setPageNumber(0);
             replyDtos = replyService.getRepliesOfQuestion(questionId,params);

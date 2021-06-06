@@ -46,12 +46,15 @@ public class QuestionController {
     @PostMapping("/new")
     public String saveQuestion(@Valid @RequestBody QuestionCreateRequest questionCreateRequest,
                                      ModelMap map,PageParams params,HttpSession httpSession){
-        if (!questionCreateRequest.getQuestion().isEmpty())
+        if (!questionCreateRequest.getQuestion().isEmpty()) {
             questionService.newQuestion(questionCreateRequest);
-        else
-            map.addAttribute("error","Question cannot be empty");
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
-        params.setPageNumber(0);
+        }
+        else {
+            map.addAttribute("error", "Question cannot be empty");
+        }
+        UserEntity loggedUser =
+                (UserEntity) httpSession.getAttribute("loggedUser");
+        params.setPageNumber(0); // always go to first page when new question is added
         List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,questionCreateRequest.getGroupId());
@@ -73,14 +76,18 @@ public class QuestionController {
     }
     @GetMapping
     public ModelAndView findById(@RequestParam Long id,PageParams params,HttpSession httpSession){
+
         httpSession.setAttribute("question",id);
 
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
-        QuestionDto questionDto =  questionService.findById(loggedUser.getId(),id);
+        UserEntity loggedUser =
+                (UserEntity) httpSession.getAttribute("loggedUser");
+        QuestionDto questionDto
+                =  questionService.findById(loggedUser.getId(),id);
         ModelAndView modelAndView = new ModelAndView("question");
 
+        Page<ReplyDto> replyDtos
+                = replyService.getRepliesOfQuestion(id,params);
 
-        Page<ReplyDto> replyDtos = replyService.getRepliesOfQuestion(id,params);
         if (params.getPageNumber()>replyDtos.getTotalPages()){
             params.setPageNumber(0);
             replyDtos = replyService.getRepliesOfQuestion(id,params);
@@ -120,7 +127,8 @@ public class QuestionController {
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,(Long) httpSession.getAttribute("group"));
         UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
-        List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
+        List<Long> groupRequests
+                = userService.groupsRequestedToJoin(loggedUser.getId());
         map.addAttribute("questions",questions);
         map.addAttribute("loggedUser", loggedUser);
         map.addAttribute("groupRequests",groupRequests);

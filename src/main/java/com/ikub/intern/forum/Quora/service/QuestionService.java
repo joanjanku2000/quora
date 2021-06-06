@@ -74,6 +74,9 @@ public class QuestionService {
     public QuestionDto findById(Long userId,Long id){
         Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
         Optional<UserEntity> loggedUser = userRepo.findById(userId);
+        if (!questionEntity.get().getGroup().isActive()){
+            throw new NotFoundException("Group isn't available");
+        }
         if (!questionEntity.isPresent()){
             throw new NotFoundException("Question not found");
         }
