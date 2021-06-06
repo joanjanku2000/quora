@@ -43,19 +43,22 @@
  let saveCategory = () => {
      let req = {};
      req.name = document.getElementById("name").value;
-            let settings = {
-                beforeSend: function(xhr,options)
-                {
-                    xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
-                },
-                type:'POST',
-                url:"http://localhost:8081/category/save",
-                data:JSON.stringify(req)
-            }
-            $.ajax(settings).done(function(e){
-                $('#categories').html(e);
-            });
-        }
+     if (req.name!=="")
+     {
+         let settings = {
+             beforeSend: function(xhr,options)
+             {
+                 xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+             },
+             type:'POST',
+             url:"http://localhost:8081/category/save",
+             data:JSON.stringify(req)
+         }
+         $.ajax(settings).done(function(e){
+             $('#categories').html(e);
+         });
+     }
+ }
 </script>
 <div class="container">
 
