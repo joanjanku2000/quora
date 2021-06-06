@@ -61,33 +61,32 @@ public class UserService  {
         return userRepo.findByEmail(email);
     }
     public void update(Long id, UserUpdateRequest userUpdateRequest){
-
-           UserEntity userToBeUpdated = userRepo.findById(id).orElse(null);
-           if (userToBeUpdated==null)
+           Optional<UserEntity> userToBeUpdated = userRepo.findById(id);
+           if (!userToBeUpdated.isPresent())
                throw new BadRequestException("The user with the given id does not exist");
 
-            if (!userToBeUpdated.getUsername().equals(userUpdateRequest.getUsername())){
+            if (!userToBeUpdated.get().getUsername().equals(userUpdateRequest.getUsername())){
                 if(usernameExists(userUpdateRequest.getUsername())){
                     throw new BadRequestException("Sorry, this username already exists");
                 }
             }
-           String email = userToBeUpdated.getEmail();
-           UserConverter.updateDtoToEntity(userToBeUpdated, userUpdateRequest);
-           if (!email.equals(userToBeUpdated.getEmail())){
+           UserConverter.updateDtoToEntity(userToBeUpdated.get(), userUpdateRequest);
+           if (!userToBeUpdated.get().getEmail().equals(userUpdateRequest.getEmail())){
                if (emailExists(userUpdateRequest.getEmail())){
                    throw new BadRequestException("Sorry, this email is already registered");
                }
            }
-           userRepo.save(userToBeUpdated);
-
+           logger.info("User updated to {}",userToBeUpdated.get());
+           userRepo.save(userToBeUpdated.get());
     }
     public void deleteUser(Long id){
-        UserEntity userToBeDeleted = userRepo.findById(id).orElse(null);
-        if (userToBeDeleted==null)
+        Optional<UserEntity> userToBeDeleted = userRepo.findById(id);
+        if (!userToBeDeleted.isPresent()){
             throw new BadRequestException("The user with the given id does not exist");
-        userToBeDeleted.setActive(false);
-        userRepo.save(userToBeDeleted);
-
+        }
+        userToBeDeleted.get().setActive(false);
+        userRepo.save(userToBeDeleted.get());
+        logger.info("User deleted {}",userToBeDeleted.get().isActive());
     }
     public void addUserToGroup(Long userId,Long groupId){
         UserEntity userEntity = userRepo.findById(userId).orElse(null);
@@ -102,29 +101,32 @@ public class UserService  {
         } else{
             userRepo.addUserToGroup(userId,groupId);
         }
+        logger.info("Added user {} to group {}",userEntity,groupEntity);
 
     }
     public void activateUserMembership(Long userId,Long groupId){
-        UserEntity userEntity = userRepo.findById(userId).orElse(null);
-        UserGroupEntity groupEntity = groupRepo.findById(groupId).orElse(null);
-      //TODO
-       /**
-        *  if (groupEntity.getAdmin().getId() is the same as logged user.getId())
-        *  then do this
-        *  else don't
-        *  */
-        if (userEntity==null || groupEntity==null)
+
+        Optional<UserEntity> userEntity = userRepo.findById(userId);
+        Optional<UserGroupEntity> groupEntity = groupRepo.findById(groupId);
+
+        if (!userEntity.isPresent() || !groupEntity.isPresent()){
             throw new BadRequestException("The user or the group doesn't exist");
+        }
         userRepo.activateUserMembership(userId,groupId);
+        logger.info("Activated membership of user"+userId+ " to group "+groupId);
     }
     public void deleteMembership(Long userId,Long groupId){
-        UserEntity userEntity = userRepo.findById(userId).orElse(null);
-        UserGroupEntity groupEntity = groupRepo.findById(groupId).orElse(null);
-        if (userEntity==null || groupEntity==null)
-            throw new BadRequestException("The user or the group doesn't exist");
+        Optional<UserEntity> userEntity = userRepo.findById(userId);
+        Optional<UserGroupEntity> groupEntity = groupRepo.findById(groupId);
 
-        if (userRepo.deleteMembership(userId,groupId)<=0)
+        if (!userEntity.isPresent() || !groupEntity.isPresent()) {
+            throw new BadRequestException("The user or the group doesn't exist");
+        }
+        if (userRepo.deleteMembership(userId,groupId)<=0){
             throw new BadRequestException("The deletion could not be made");
+        }
+
+        logger.info("Deleted membership of user"+userId+ " to group "+groupId);
     }
     public boolean userExists(CustomOauth2User user) {
         UserEntity existingUser = userRepo.findByEmail(user.getEmail());
@@ -132,7 +134,6 @@ public class UserService  {
 
         if (existingUser == null) {
             return false;
-           // userRepo.save(newUser);
         } else {
             logger.info("Existing user logged");
            return true;

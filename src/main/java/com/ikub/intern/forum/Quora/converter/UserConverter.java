@@ -43,7 +43,6 @@ public class UserConverter {
     }
 
     public static void updateDtoToEntity(UserEntity userEntity, UserUpdateRequest userUpdateRequest){
-
         userEntity.setUsername(userUpdateRequest.getUsername());
         userEntity.setBirthday(LocalDate.parse(userUpdateRequest.getBirthday()));
         userEntity.setLastName(userUpdateRequest.getLastName());

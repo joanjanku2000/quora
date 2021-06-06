@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor// vendos @Valid te controlleri
+@AllArgsConstructor
 @ToString
 public class UserCreateRequest {
     @NotNull

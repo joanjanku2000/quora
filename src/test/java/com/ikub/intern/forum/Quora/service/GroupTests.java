@@ -1,8 +1,7 @@
 package com.ikub.intern.forum.Quora.service;
 
-import com.ikub.intern.forum.Quora.converter.CategoryConverter;
+
 import com.ikub.intern.forum.Quora.converter.GroupConverter;
-import com.ikub.intern.forum.Quora.dto.category.CategoryCreateRequest;
 import com.ikub.intern.forum.Quora.dto.group.GroupDtoForCreateUpdate;
 import com.ikub.intern.forum.Quora.entities.*;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
@@ -12,8 +11,7 @@ import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
 import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
 
-import com.ikub.intern.forum.Quora.utils.Utils;
-import org.apache.catalina.util.ResourceSet;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -21,15 +19,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -43,8 +41,6 @@ public class GroupTests {
     private CategoryRepo categoryRepo;
     @Mock
     private UserRepo userRepo;
-    @Mock
-    private QuestionsRepo questionsRepo;
     @InjectMocks
     private GroupService groupService;
 
