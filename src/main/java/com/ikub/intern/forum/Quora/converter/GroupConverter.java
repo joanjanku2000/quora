@@ -71,7 +71,6 @@ public class GroupConverter {
     public static Set<GroupDtoMini> entitySetToDtoSetMini(Set<UserGroupEntity> userGroupEntities){
         Set<GroupDtoMini> groupDtos = new HashSet<>();
         userGroupEntities.forEach((group)->{
-            System.out.println(group);
             groupDtos.add(entityToDtoMini(group));
         });
         return groupDtos;

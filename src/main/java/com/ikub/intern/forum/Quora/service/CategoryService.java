@@ -32,13 +32,15 @@ public class CategoryService {
             throw new BadRequestException("Sorry, the category you are trying to add already exists");
         }
         categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,createdBy);
-         categoryRepo.save(categoryEntity);
+        categoryRepo.save(categoryEntity);
         logger.info("Saved category {}",categoryEntity);
     }
     public void deleteCategory(Long id){
         logger.info("Deleting category {}",id);
         Optional<CategoryEntity> categoryEntity = categoryRepo.findById(id);
-        if (!categoryEntity.isPresent()) throw new BadRequestException("The category you requested does not exist");
+        if (!categoryEntity.isPresent()) {
+            throw new BadRequestException("The category you requested does not exist");
+        }
         categoryEntity.get().setActive(false);
         categoryRepo.save(categoryEntity.get());
         logger.info("Deleted category {}",categoryEntity);

@@ -25,13 +25,18 @@ public class TagEntity {
     private Long id;
     @Column
     private String tagName;
-   // @CreatedBy
     @ManyToOne
     @JoinColumn(name="created_by",referencedColumnName = "id")
     private UserEntity createdBy;
-    @CreatedDate
     @Column
     private LocalDateTime createdAt;
     @Column
     private boolean active;
+
+    public TagEntity(String tagName, UserEntity createdBy, LocalDateTime createdAt, boolean active) {
+        this.tagName = tagName;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+        this.active = active;
+    }
 }

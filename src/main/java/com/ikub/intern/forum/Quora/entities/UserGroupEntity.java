@@ -74,7 +74,6 @@ public class UserGroupEntity {
     @JoinColumn(name="updated_by",referencedColumnName = "id")
     @JsonIgnore
     private UserEntity updatedBy;
-
     @Column
     private LocalDateTime createdAt;
     @Column
@@ -92,7 +91,6 @@ public class UserGroupEntity {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="id_group",referencedColumnName = "id")
     @Where(clause = "active=true")
-    //@JsonIgnoreProperties("group")
     @OrderBy("date DESC")
     private Set<QuestionEntity> questions;
 }

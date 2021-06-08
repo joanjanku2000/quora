@@ -73,7 +73,8 @@ public class ReplyTests {
         userEntity2.setId(2L);
         replyRequest = new ReplyRequest("reply");
         questionEntitySet = new HashSet<>();
-        tagEntity1 = new TagEntity(1L,"tag1",userEntity,LocalDateTime.of(2021,2,3,5,4),true);
+        tagEntity1 =
+                new TagEntity(1L,"tag1",userEntity,LocalDateTime.of(2021,2,3,5,4),true);
         tagEntity2 = new TagEntity(2L,"tag2",userEntity,LocalDateTime.of(2021,2,3,5,4),true);
         tagEntities = new HashSet<>();
         tagEntities.add(tagEntity1);

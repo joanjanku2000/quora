@@ -25,7 +25,7 @@ public class UserDto {
 
     public UserDto(Long id, String firstName, String lastName,
                    String email, String username, String gender,
-                   LocalDate birthday, String userRole, Set<GroupDtoMini> userGroupEntityList) {
+                   LocalDate birthday, String userRole) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -34,6 +34,5 @@ public class UserDto {
         this.gender = gender;
         this.birthday = birthday;
         this.userRole = userRole;
-        //this.userGroupEntityList = userGroupEntityList;
     }
 }

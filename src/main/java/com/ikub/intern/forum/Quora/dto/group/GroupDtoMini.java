@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GroupDtoMini {
     private Long id;
     private String groupName;

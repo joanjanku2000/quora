@@ -77,7 +77,6 @@ public class GroupController {
 
     @GetMapping("/{id}")
     public ModelAndView findById(@PathVariable Long id, PageParams params, HttpSession httpSession) {
-
         UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
         ModelAndView modelAndView = new ModelAndView("group_page");
 
@@ -101,9 +100,6 @@ public class GroupController {
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params, groupDto.getId());
 
-        /**
-         * Handling of bad page number
-         */
         if (params.getPageNumber() > questions.getTotalPages() - 1 || params.getPageNumber() < 0) {
             params.setPageNumber(0);
             questions = questionService.findAllInAGroup(params, groupDto.getId());

@@ -5,6 +5,8 @@ import com.ikub.intern.forum.Quora.dto.tag.TagDtoForCreate;
 import com.ikub.intern.forum.Quora.entities.TagEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
+import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
+import com.ikub.intern.forum.Quora.exceptions.NotFoundException;
 import com.ikub.intern.forum.Quora.service.TagService;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,7 @@ public class TagController {
          tagService.saveTag(tagDtoForCreate,userEntity);
          tagDtoList = tagService.findALl();
          model.addAttribute("tags",tagDtoList);
-     } catch (BadRequestException e){
+     } catch (NotAllowedException e){
          tagDtoList = tagService.findALl();
          model.addAttribute("tags",tagDtoList);
          model.addAttribute("error","Cannot add 2 tags with the same name");

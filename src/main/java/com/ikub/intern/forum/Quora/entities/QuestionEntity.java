@@ -16,7 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @Where(clause = "active=true")
 public class QuestionEntity {
     @Id
@@ -63,6 +63,13 @@ public class QuestionEntity {
     @JsonIgnoreProperties("question")
     private Set<ReplyEntity> replies;
 
-
+    public QuestionEntity(String question, UserEntity user, UserGroupEntity group, LocalDateTime date, boolean active, Set<TagEntity> tagList) {
+        this.question = question;
+        this.user = user;
+        this.group = group;
+        this.date = date;
+        this.active = active;
+        this.tagList = tagList;
+    }
 }
 

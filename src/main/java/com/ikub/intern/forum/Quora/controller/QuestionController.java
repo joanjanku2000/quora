@@ -78,20 +78,14 @@ public class QuestionController {
     public ModelAndView findById(@RequestParam Long id,PageParams params,HttpSession httpSession){
 
         httpSession.setAttribute("question",id);
-
         UserEntity loggedUser =
                 (UserEntity) httpSession.getAttribute("loggedUser");
         QuestionDto questionDto
                 =  questionService.findById(loggedUser.getId(),id);
         ModelAndView modelAndView = new ModelAndView("question");
-
         Page<ReplyDto> replyDtos
                 = replyService.getRepliesOfQuestion(id,params);
 
-        if (params.getPageNumber()>replyDtos.getTotalPages()){
-            params.setPageNumber(0);
-            replyDtos = replyService.getRepliesOfQuestion(id,params);
-        }
         //handle page number
         if (params.getPageNumber()>replyDtos.getTotalPages()-1 || params.getPageNumber()<0){
             params.setPageNumber(0);

@@ -18,20 +18,15 @@ public class QuestionConverter {
     private static Set<UserEntity> upvoteTableToUserSet(Set<UpvotesQuestion> upvotesQuestions) {
         Set<UserEntity> userEntities = new HashSet<>();
         upvotesQuestions.forEach((upvotesQuestion -> {
-            System.out.println(upvotesQuestion);
             userEntities.add(upvotesQuestion.getUser());
         }));
         return userEntities;
     }
         public static QuestionEntity toEntity(QuestionCreateRequest questionCreateRequest,
                                               UserGroupEntity userGroupEntity, UserEntity userEntity,Set<TagEntity> tags){
-        QuestionEntity questionEntity = new QuestionEntity();
-        questionEntity.setActive(true);
-        questionEntity.setQuestion(questionCreateRequest.getQuestion());
-        questionEntity.setUser(userEntity);
-        questionEntity.setGroup(userGroupEntity);
-        questionEntity.setDate(LocalDateTime.now());
-        questionEntity.setTagList(tags);
+            QuestionEntity questionEntity
+                = new QuestionEntity(questionCreateRequest.getQuestion(),userEntity,
+                userGroupEntity,LocalDateTime.now(),true,tags);
         return questionEntity;
     }
     public static QuestionDto entityToDto(QuestionEntity questionEntity){

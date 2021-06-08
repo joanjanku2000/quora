@@ -37,7 +37,6 @@ public class GroupService {
 
     @Transactional
     public void createGroup(Long adminId,GroupDtoForCreateUpdate groupDtoForCreate){
-
         Optional<CategoryEntity> categoryEntity = categoryRepo
                 .findById(groupDtoForCreate.getCategoryId());
         Optional<UserEntity> admin = userRepo.findById(adminId);

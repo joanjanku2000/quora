@@ -226,9 +226,11 @@ public class UserController {
     public ModelAndView viewSubscribedGroups(HttpSession httpSession){
         ModelAndView modelAndView = new ModelAndView("user_groups");
         UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
-        List<CategoryDto> categoryDtos = categoryService.findAll();
+        List<CategoryDto> categoryDtos
+                = categoryService.findAll();
         GroupDtoForCreateUpdate groupDtoForCreateUpdate = new GroupDtoForCreateUpdate();
-        List<GroupDto> groupDtoList = userService.findGroupsOfUser(loggedUser.getId());
+        List<GroupDto> groupDtoList
+                = userService.findGroupsOfUser(loggedUser.getId());
         modelAndView.addObject("groups",groupDtoList);
         modelAndView.addObject("groupCreateDto",groupDtoForCreateUpdate);
         modelAndView.addObject("categories",categoryDtos);

@@ -24,21 +24,13 @@ public class UserConverter {
     public static UserEntity toEntity(UserCreateRequest userCreateRequest){
       if(userCreateRequest.getEmail().isEmpty() || userCreateRequest.getFirstName().isEmpty()
               || userCreateRequest.getUsername().isEmpty()  || userCreateRequest.getGender().isEmpty()
-         //     || userCreateRequest.getBirthday().isEmpty() || userCreateRequest.getPassword().isEmpty()
                 || userCreateRequest.getLastName().isEmpty()){
             throw new BadRequestException("ALl fields must be completed");
         }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setFirstName(userCreateRequest.getFirstName());
-        userEntity.setLastName(userCreateRequest.getLastName());
-        userEntity.setBirthday(LocalDate.parse(userCreateRequest.getBirthday()));
-        userEntity.setEmail(userCreateRequest.getEmail());
 
-        userEntity.setGender(userCreateRequest.getGender());
-        userEntity.setUsername(userCreateRequest.getUsername());
-        userEntity.setUserRole(Roles.USER.value);
-        userEntity.setCreatedAt(LocalDateTime.now());
-        userEntity.setActive(true);
+        UserEntity userEntity = new UserEntity(userCreateRequest.getFirstName(),userCreateRequest.getLastName()
+                ,userCreateRequest.getEmail(),userCreateRequest.getGender(),userCreateRequest.getUsername()
+                ,LocalDate.parse(userCreateRequest.getBirthday()),LocalDateTime.now(),Roles.USER.value, true);
         return userEntity;
     }
 
@@ -50,17 +42,8 @@ public class UserConverter {
         userEntity.setUpdatedAt(LocalDateTime.now());
     }
     public static UserDto entityToDto(UserEntity userEntity){
-        UserDto userDto = new UserDto();
-        userDto.setId(userEntity.getId());
-        userDto.setUsername(userEntity.getUsername());
-        userDto.setFirstName(userEntity.getFirstName());
-        userDto.setLastName(userEntity.getLastName());
-        userDto.setUserRole(userEntity.getUserRole());
-        userDto.setEmail(userEntity.getEmail());
-        userDto.setBirthday(userEntity.getBirthday());
-        userDto.setGender(userEntity.getGender());
-
-        return userDto;
+        return new UserDto(userEntity.getId(),userEntity.getFirstName(),userEntity.getLastName(),userEntity.getEmail(),
+        userEntity.getUsername(),userEntity.getGender(),userEntity.getBirthday(),userEntity.getUserRole());
     }
     public static UserDtoMini entitySetToDtoMiniSet(UserEntity userEntity){
         return new UserDtoMini(userEntity.getFirstName(),
