@@ -200,10 +200,11 @@
                         <option th:value="${c.categoryName}" th:text="${c.categoryName}"></option>
                     </div>
                 </select>
+            </form>
                 <br>
                 <label>Search:</label>
                 <input id="name" type="text" placeholder="Group name" class="form-control col-md-6" onchange="search()">
-            </form>
+
         </div>
 
         <div class="col-sm-8" id="groups" th:fragment="groups">
