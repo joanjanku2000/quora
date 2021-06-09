@@ -14,7 +14,9 @@ import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
 import com.ikub.intern.forum.Quora.repository.TagRepo;
 import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
+import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
+import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,15 +61,6 @@ public class QuestionService {
         }
         QuestionEntity question
                 = QuestionConverter.toEntity(questionCreateRequest,userGroupEntity.get(),userEntity.get(),tagEntities);
-//        if (question.getTagList() != null && !question.getTagList().isEmpty()){
-//            List<Long> tagIds = questionCreateRequest.getTags();
-//            Set<TagEntity> tagEntitySet = new HashSet<>();
-//            for (Long tagId : tagIds){
-//                Optional<TagEntity> tagEntity = tagRepo.findById(tagId);
-//                tagEntity.ifPresent(tagEntitySet::add);
-//            }
-//            question.setTagList(tagEntitySet);
-//        }
         logger.info("Save succes  {} ",question.getQuestion());
         return questionsRepo.save(question);
     }
@@ -111,6 +104,11 @@ public class QuestionService {
 
     public void deleteQuestion(Long id){
         Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
+
+        UserEntity loggedUser = userRepo.findByEmail(LoggedUserUtil.getLoggedUser().getAttribute("email"));
+        if (!userIsPartOfTheGroup(loggedUser,questionEntity.get().getGroup())){
+            throw new NotAllowedException("You cannot delete this question, because you are not part of the group");
+        }
         if (!questionEntity.isPresent()) {
             throw new NotFoundException("Question does not exist");
         }
@@ -119,8 +117,11 @@ public class QuestionService {
         questionsRepo.save(questionEntity.get());
     }
     public void updateQuestion(Long id, QuestionUpdateRequest requestForUpdate){
-
         Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
+        UserEntity loggedUser = userRepo.findByEmail(LoggedUserUtil.getLoggedUser().getAttribute("email"));
+        if (!userIsPartOfTheGroup(loggedUser,questionEntity.get().getGroup())){
+            throw new NotAllowedException("You cannot update this question, because you are not part of the group");
+        }
         if (!questionEntity.isPresent()) {
             throw new NotFoundException("Question does not exist");
         }
