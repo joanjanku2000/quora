@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface TagRepo extends JpaRepository<TagEntity,Long> {
-
     @Query("Select t from TagEntity t where t.id = :id and t.active = true")
     Optional<TagEntity> findById(@Param("id")Long id);
 

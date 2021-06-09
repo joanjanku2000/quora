@@ -19,9 +19,7 @@ import java.util.Set;
 public class TagConverter {
 
     public static TagEntity toEntity(TagDtoForCreate tagDtoForCreate, UserEntity userEntity){
-        TagEntity tagEntity
-                = new TagEntity(tagDtoForCreate.getTagName(),userEntity,LocalDateTime.now(),true);
-        return tagEntity;
+        return new TagEntity(tagDtoForCreate.getTagName(),userEntity,LocalDateTime.now(),true);
     }
     public static TagDto entityToDto(TagEntity tagEntity){
        return new TagDto(tagEntity.getId(),tagEntity.getTagName());

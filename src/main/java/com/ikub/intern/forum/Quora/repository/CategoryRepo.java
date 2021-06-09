@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface CategoryRepo extends JpaRepository<CategoryEntity,Long> {
     @Query("Select c from CategoryEntity c where c.id = :id and c.active=true")
-    public Optional<CategoryEntity> findById(@Param("id") Long id);
-    public CategoryEntity findByCategoryName(String categoryName);
+    Optional<CategoryEntity> findById(@Param("id") Long id);
+    CategoryEntity findByCategoryName(String categoryName);
 }

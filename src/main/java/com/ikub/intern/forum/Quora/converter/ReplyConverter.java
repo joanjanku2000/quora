@@ -38,7 +38,7 @@ public class ReplyConverter {
         return replyDtos;
     }
     public static Page<ReplyDto> entityPageToDtoPage(Page<ReplyEntity> replyEntities){
-        Page<ReplyDto> dtoPage = replyEntities.map(
+        return replyEntities.map(
                 new Function<ReplyEntity,ReplyDto>(){
                     @Override
                     public ReplyDto apply(ReplyEntity entity){
@@ -46,6 +46,5 @@ public class ReplyConverter {
                     }
                 }
         );
-        return dtoPage;
     }
 }

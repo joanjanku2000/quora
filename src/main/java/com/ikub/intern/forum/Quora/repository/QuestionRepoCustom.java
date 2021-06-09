@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface QuestionRepoCustom {
     List<QuestionEntity> findAllByGroup(Long id);
-  //  Page<QuestionEntity> findAllByTagName(String name);
+
 
 }

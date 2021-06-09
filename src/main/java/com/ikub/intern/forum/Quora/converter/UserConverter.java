@@ -28,10 +28,9 @@ public class UserConverter {
             throw new BadRequestException("ALl fields must be completed");
         }
 
-        UserEntity userEntity = new UserEntity(userCreateRequest.getFirstName(),userCreateRequest.getLastName()
+        return new UserEntity(userCreateRequest.getFirstName(),userCreateRequest.getLastName()
                 ,userCreateRequest.getEmail(),userCreateRequest.getGender(),userCreateRequest.getUsername()
                 ,LocalDate.parse(userCreateRequest.getBirthday()),LocalDateTime.now(),Roles.USER.value, true);
-        return userEntity;
     }
 
     public static void updateDtoToEntity(UserEntity userEntity, UserUpdateRequest userUpdateRequest){

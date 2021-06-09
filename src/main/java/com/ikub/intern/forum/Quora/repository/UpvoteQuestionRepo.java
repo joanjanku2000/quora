@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface UpvoteQuestionRepo extends JpaRepository<UpvotesQuestion,Long> {
-    public List<UpvotesQuestion> findAllByQuestionId(Long id);
-    public Optional<UpvotesQuestion> findByQuestionIdAndUserId(Long questionId, Long userId);
+    List<UpvotesQuestion> findAllByQuestionId(Long id);
+    Optional<UpvotesQuestion> findByQuestionIdAndUserId(Long questionId, Long userId);
 }

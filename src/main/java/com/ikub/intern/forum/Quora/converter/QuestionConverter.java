@@ -24,10 +24,8 @@ public class QuestionConverter {
     }
         public static QuestionEntity toEntity(QuestionCreateRequest questionCreateRequest,
                                               UserGroupEntity userGroupEntity, UserEntity userEntity,Set<TagEntity> tags){
-            QuestionEntity questionEntity
-                = new QuestionEntity(questionCreateRequest.getQuestion(),userEntity,
-                userGroupEntity,LocalDateTime.now(),true,tags);
-        return questionEntity;
+            return new QuestionEntity(questionCreateRequest.getQuestion(),userEntity,
+            userGroupEntity,LocalDateTime.now(),true,tags);
     }
     public static QuestionDto entityToDto(QuestionEntity questionEntity){
 
