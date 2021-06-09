@@ -37,12 +37,7 @@ public class QuestionController {
     private QuestionService questionService;
     @Autowired
     private ReplyService replyService;
-    @Autowired
-    private TagService tagService;
-    /**
-     * Should i get group and users as parameter ?
-     * @param questionCreateRequest
-     */
+
     @PostMapping("/new")
     public String saveQuestion(@Valid @RequestBody QuestionCreateRequest questionCreateRequest,
                                      ModelMap map,PageParams params,HttpSession httpSession){
