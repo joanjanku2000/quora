@@ -136,13 +136,18 @@ public class QuestionTests {
     @DisplayName("Delete question fail: question not found")
     void deleteQuestion(){
         Long id = 1L;
-        assertThrows(NotFoundException.class,() -> questionService.deleteQuestion(id));
+        Long uid = 1L;
+        when(userRepo.findById(uid)).thenReturn(Optional.of(userEntity));
+        assertThrows(NotFoundException.class,() -> questionService.deleteQuestion(id,uid));
     }
 
     @Test
-    @DisplayName("Update question fail: question not found")
+    @DisplayName("Update question fail: user not allowed to update it")
     void update(){
         Long id = 1L;
-        assertThrows(NotFoundException.class,() -> questionService.updateQuestion(id,new QuestionUpdateRequest()));
+        Long uid = 1L;
+        when(userRepo.findById(uid)).thenReturn(Optional.of(userEntity2));
+        when(questionsRepo.findById(id)).thenReturn(Optional.of(questionEntity));
+        assertThrows(NotAllowedException.class,() -> questionService.updateQuestion(id,uid,new QuestionUpdateRequest()));
     }
 }

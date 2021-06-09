@@ -1,19 +1,15 @@
 package com.ikub.intern.forum.Quora.controller;
 
-import com.ikub.intern.forum.Quora.dto.LoggedUser;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
 import com.ikub.intern.forum.Quora.entities.*;
-import com.ikub.intern.forum.Quora.repository.QuestionRepoImpl;
 import com.ikub.intern.forum.Quora.service.QuestionService;
 import com.ikub.intern.forum.Quora.service.UpvotesService;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;

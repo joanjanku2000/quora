@@ -1,12 +1,9 @@
 package com.ikub.intern.forum.Quora.dto.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.ikub.intern.forum.Quora.dto.group.GroupDto;
-import com.ikub.intern.forum.Quora.dto.group.GroupDtoMini;
-import lombok.*;
 
+import lombok.*;
 import java.time.LocalDate;
-import java.util.Set;
+
 
 @Getter
 @NoArgsConstructor
@@ -21,7 +18,6 @@ public class UserDto {
     private String gender;
     private LocalDate birthday;
     private String userRole;
-    private Set<GroupDtoMini> userGroupEntityList;
 
     public UserDto(Long id, String firstName, String lastName,
                    String email, String username, String gender,

@@ -96,7 +96,6 @@ public class UserController {
             return "profile";
         }
 
-
     }
 
     @PostMapping("/group/{gid}")
@@ -180,8 +179,6 @@ public class UserController {
         modelAndView.addObject("requests", userGroupRequests);
 
         return modelAndView;
-
-
     }
 
     @GetMapping("/postlogin")

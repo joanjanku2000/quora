@@ -12,9 +12,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-// TODO Admin activates the subscription in a group
-// so we add status(string) into the intermediate table/
-// status -> active/passive -> admin turns it into active.
 @SqlResultSetMapping(
         name = "GroupsOfUser",
         entities = @EntityResult(
@@ -91,6 +88,6 @@ public class UserGroupEntity {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="id_group",referencedColumnName = "id")
     @Where(clause = "active=true")
-    @OrderBy("date DESC")
+   // @OrderBy("date DESC")
     private Set<QuestionEntity> questions;
 }

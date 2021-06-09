@@ -16,7 +16,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-//@AllArgsConstructor
 @Where(clause = "active=true")
 public class QuestionEntity {
     @Id
@@ -55,9 +54,7 @@ public class QuestionEntity {
     @JsonIgnoreProperties("question")
     private Set<UpvotesQuestion> upvotesQuestion;
 
-
     @OneToMany(mappedBy = "question",fetch = FetchType.EAGER)
-    //@JoinColumn(name="id",referencedColumnName = "id_question")
     @Where(clause = "active=true")
     @OrderBy("createdAt")
     @JsonIgnoreProperties("question")

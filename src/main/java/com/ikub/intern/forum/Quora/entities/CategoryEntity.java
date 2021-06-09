@@ -27,4 +27,11 @@ public class CategoryEntity {
     private LocalDateTime createdAt;
     @Column
     private boolean active;
+
+    public CategoryEntity(String categoryName, UserEntity createdBy, LocalDateTime createdAt, boolean active) {
+        this.categoryName = categoryName;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+        this.active = active;
+    }
 }

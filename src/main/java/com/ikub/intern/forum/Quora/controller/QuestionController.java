@@ -1,23 +1,16 @@
 package com.ikub.intern.forum.Quora.controller;
 
-import com.ikub.intern.forum.Quora.dto.LoggedUser;
 import com.ikub.intern.forum.Quora.dto.question.QuestionCreateRequest;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
 import com.ikub.intern.forum.Quora.dto.question.QuestionUpdateRequest;
 import com.ikub.intern.forum.Quora.dto.reply.ReplyDto;
-import com.ikub.intern.forum.Quora.dto.reply.ReplyRequest;
-import com.ikub.intern.forum.Quora.dto.user.UserDto;
-import com.ikub.intern.forum.Quora.entities.QuestionEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.service.QuestionService;
 import com.ikub.intern.forum.Quora.service.ReplyService;
-import com.ikub.intern.forum.Quora.service.TagService;
 import com.ikub.intern.forum.Quora.service.UserService;
 import com.ikub.intern.forum.Quora.utils.PageParams;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -96,12 +89,13 @@ public class QuestionController {
     @PutMapping("/update/question/{id}")
     public String updateQuestion(@PathVariable Long id, @RequestBody QuestionUpdateRequest requestForUpdate,
                                PageParams params,HttpSession httpSession,ModelMap map){
+        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+
         if (!requestForUpdate.getQuestion().isEmpty()){
-            questionService.updateQuestion(id,requestForUpdate);
+            questionService.updateQuestion(id,loggedUser.getId(),requestForUpdate);
         }
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,(Long) httpSession.getAttribute("group"));
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
         List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
 
         map.addAttribute("questions",questions);
@@ -111,11 +105,12 @@ public class QuestionController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deleteQuestion(@PathVariable Long id,ModelMap map, PageParams params,HttpSession httpSession){
-        questionService.deleteQuestion(id);
+    public String deleteQuestion(@PathVariable Long id,Long uid,ModelMap map, PageParams params,HttpSession httpSession){
+        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        questionService.deleteQuestion(id,loggedUser.getId());
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,(Long) httpSession.getAttribute("group"));
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+
         List<Long> groupRequests
                 = userService.groupsRequestedToJoin(loggedUser.getId());
         map.addAttribute("questions",questions);

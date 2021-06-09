@@ -1,27 +1,20 @@
 package com.ikub.intern.forum.Quora.controller;
 
-import com.ikub.intern.forum.Quora.dto.LoggedUser;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
 import com.ikub.intern.forum.Quora.dto.reply.ReplyDto;
 import com.ikub.intern.forum.Quora.dto.reply.ReplyRequest;
-import com.ikub.intern.forum.Quora.entities.ReplyEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.service.QuestionService;
 import com.ikub.intern.forum.Quora.service.ReplyService;
 import com.ikub.intern.forum.Quora.utils.PageParams;
-import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/replies")

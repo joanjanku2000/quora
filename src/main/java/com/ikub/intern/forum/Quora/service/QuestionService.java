@@ -1,11 +1,9 @@
 package com.ikub.intern.forum.Quora.service;
 
 import com.ikub.intern.forum.Quora.converter.QuestionConverter;
-import com.ikub.intern.forum.Quora.dto.LoggedUser;
 import com.ikub.intern.forum.Quora.dto.question.QuestionCreateRequest;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
 import com.ikub.intern.forum.Quora.dto.question.QuestionUpdateRequest;
-import com.ikub.intern.forum.Quora.dto.user.UserDto;
 import com.ikub.intern.forum.Quora.entities.*;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
 import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
@@ -16,7 +14,6 @@ import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
 import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
-import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -102,24 +98,32 @@ public class QuestionService {
         return false;
     }
 
-    public void deleteQuestion(Long id){
+    public void deleteQuestion(Long id,Long uid){
         Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
-
-        UserEntity loggedUser = userRepo.findByEmail(LoggedUserUtil.getLoggedUser().getAttribute("email"));
-        if (!userIsPartOfTheGroup(loggedUser,questionEntity.get().getGroup())){
-            throw new NotAllowedException("You cannot delete this question, because you are not part of the group");
+        Optional<UserEntity> loggedUser
+                = userRepo.findById(uid);
+        if (!loggedUser.isPresent()) {
+            throw new NotFoundException("User not found");
         }
         if (!questionEntity.isPresent()) {
             throw new NotFoundException("Question does not exist");
         }
+        if (!userIsPartOfTheGroup(loggedUser.get(),questionEntity.get().getGroup())){
+            throw new NotAllowedException("You cannot delete this question, because you are not part of the group");
+        }
+
         questionEntity.get().setActive(false);
         logger.info("Deleting question  {} ",questionEntity.get().isActive());
         questionsRepo.save(questionEntity.get());
     }
-    public void updateQuestion(Long id, QuestionUpdateRequest requestForUpdate){
+    public void updateQuestion(Long id,Long uid, QuestionUpdateRequest requestForUpdate){
         Optional<QuestionEntity> questionEntity = questionsRepo.findById(id);
-        UserEntity loggedUser = userRepo.findByEmail(LoggedUserUtil.getLoggedUser().getAttribute("email"));
-        if (!userIsPartOfTheGroup(loggedUser,questionEntity.get().getGroup())){
+        Optional<UserEntity> loggedUser
+                = userRepo.findById(uid);
+        if (!loggedUser.isPresent()) {
+            throw new NotFoundException("USer not found");
+        }
+        if (!userIsPartOfTheGroup(loggedUser.get(),questionEntity.get().getGroup())){
             throw new NotAllowedException("You cannot update this question, because you are not part of the group");
         }
         if (!questionEntity.isPresent()) {

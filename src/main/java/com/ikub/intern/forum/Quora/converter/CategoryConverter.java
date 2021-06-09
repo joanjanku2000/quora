@@ -15,12 +15,7 @@ import java.util.Set;
 
 public class CategoryConverter {
     public static CategoryEntity toEntity(CategoryCreateRequest categoryCreateRequest, UserEntity createdBY){
-        CategoryEntity categoryEntity = new CategoryEntity();
-        categoryEntity.setActive(true);
-        categoryEntity.setCategoryName(categoryCreateRequest.getName());
-        categoryEntity.setCreatedAt(LocalDateTime.now());
-        categoryEntity.setCreatedBy(createdBY);
-        return categoryEntity;
+        return new CategoryEntity(categoryCreateRequest.getName(),createdBY,LocalDateTime.now(),true);
     }
     public static CategoryDto entityToDto(CategoryEntity categoryEntity){
        return new CategoryDto(categoryEntity.getId(),categoryEntity.getCategoryName());

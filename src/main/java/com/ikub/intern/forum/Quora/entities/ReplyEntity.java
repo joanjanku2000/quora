@@ -15,6 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="reply")
+@Where(clause = "active=true")
 @NoArgsConstructor
 @Getter
 @Setter
