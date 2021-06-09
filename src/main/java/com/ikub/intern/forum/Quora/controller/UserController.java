@@ -98,11 +98,12 @@ public class UserController {
 
         UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
         UserDto userDto = UserConverter.entityToDto(userEntity);
-        List<UserGroup> userGroupRequests = userService.findUserJoinRequests(userEntity.getId());
+        List<UserGroup> userGroupRequests
+                = userService.findUserJoinRequests(userEntity.getId());
         model.addAttribute("user",userDto);
         model.addAttribute("requests",userGroupRequests);
-
         model.addAttribute("userUpdateDTO",userUpdateRequest);
+
         try{
             userService.update(userEntity.getId(), userUpdateRequest);
             return "redirect:/users/profile";
@@ -175,14 +176,20 @@ public class UserController {
 
     @GetMapping("/profile")
     public ModelAndView profile(HttpSession httpSession){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomOauth2User principal = (CustomOauth2User) authentication.getPrincipal();
-        ModelAndView modelAndView = new ModelAndView("profile");
-        UserEntity userEntity = userService.findByEmail(principal.getEmail());
-        LoggedUser.setLoggedUser(userEntity);
+        Authentication authentication
+                = SecurityContextHolder.getContext().getAuthentication();
+        CustomOauth2User principal
+                = (CustomOauth2User) authentication.getPrincipal();
+        ModelAndView modelAndView
+                = new ModelAndView("profile");
+        UserEntity userEntity
+                = userService.findByEmail(principal.getEmail());
+
         httpSession.setAttribute("loggedUser",userEntity);
-        UserDto userDto = UserConverter.entityToDto(userEntity);
-        List<UserGroup> userGroupRequests = userService.findUserJoinRequests(userEntity.getId());
+        UserDto userDto
+                = UserConverter.entityToDto(userEntity);
+        List<UserGroup> userGroupRequests
+                = userService.findUserJoinRequests(userEntity.getId());
         modelAndView.addObject("user",userDto);
         modelAndView.addObject("requests",userGroupRequests);
 
@@ -210,7 +217,6 @@ public class UserController {
         userCreateRequest.setFirstName(user.getGivenName());
         userCreateRequest.setLastName(user.getLastName());
         userCreateRequest.setEmail(user.getEmail());
-
 
       try{
             userService.saveUser(userCreateRequest);
@@ -258,7 +264,6 @@ public class UserController {
             feed = userService.feed(loggedUser.getId(),params);
         }
         model.addAttribute("feed",feed);
-
         return "feed";
     }
 
