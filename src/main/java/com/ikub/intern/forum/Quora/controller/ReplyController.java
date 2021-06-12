@@ -63,8 +63,8 @@ public class ReplyController {
 
         Page<ReplyDto> replyDtos
                 = replyService.getRepliesOfQuestion(questionId,params);
-        if (params.getPageNumber()>replyDtos.getTotalPages()){
-            params.setPageNumber(0);
+        if (Integer.parseInt(params.getPageNumber())>replyDtos.getTotalPages()){
+            params.setPageNumber(String.valueOf(0));
             replyDtos = replyService.getRepliesOfQuestion(questionId,params);
         }
         model.addAttribute("questionDto",questionDto);
@@ -81,8 +81,8 @@ public class ReplyController {
 
         Page<ReplyDto> replyDtos
                 = replyService.getRepliesOfQuestion(questionId,params);
-        if (params.getPageNumber()>replyDtos.getTotalPages()){
-            params.setPageNumber(0);
+        if (Integer.parseInt(params.getPageNumber())>replyDtos.getTotalPages()){
+            params.setPageNumber(String.valueOf(0));
             replyDtos = replyService.getRepliesOfQuestion(questionId,params);
         }
         QuestionDto questionDto = questionService.findById(loggedUser.getId(),questionId);

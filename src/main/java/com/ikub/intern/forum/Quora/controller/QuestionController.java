@@ -11,6 +11,7 @@ import com.ikub.intern.forum.Quora.service.ReplyService;
 import com.ikub.intern.forum.Quora.service.UserService;
 import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -21,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
-
+@Slf4j
 @Controller
 @RequestMapping("/questions")
 public class QuestionController {
@@ -44,7 +45,7 @@ public class QuestionController {
         }
         UserDto loggedUser
                 = LoggedUserUtil.getLoggedUserDto(httpSession);
-        params.setPageNumber(0);  /** always go to first page when new question is added */
+        params.setPageNumber(String.valueOf(0));  /** always go to first page when new question is added */
         List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,questionCreateRequest.getGroupId());
@@ -55,6 +56,7 @@ public class QuestionController {
     }
     @GetMapping("/group/{id}")
     public String getQuestionOfGroup(@PathVariable Long id, PageParams params,ModelMap map,HttpSession httpSession){
+
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,id);
         UserDto loggedUser
@@ -78,8 +80,8 @@ public class QuestionController {
                 = replyService.getRepliesOfQuestion(id,params);
 
         /** Handling page number mistake */
-        if (params.getPageNumber()>replyDtos.getTotalPages()-1 || params.getPageNumber()<0){
-            params.setPageNumber(0);
+        if (Integer.parseInt(params.getPageNumber())>replyDtos.getTotalPages()-1 ){
+            params.setPageNumber(String.valueOf(0));
             replyDtos = replyService.getRepliesOfQuestion(id,params);
         }
         modelAndView.addObject(questionDto);

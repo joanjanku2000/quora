@@ -94,26 +94,30 @@ public class GroupService {
         groupRepo.save(groupEntity);
     }
     public UserGroupEntity findById(Long id){
-        UserGroupEntity groupEntity = groupRepo.findById(id).orElse(null);
-        if (groupEntity==null) throw new BadRequestException("The group with the given id does not exist");
-        return groupEntity;
+        Optional<UserGroupEntity> groupEntity = groupRepo.findById(id);
+        if (!groupEntity.isPresent()) {
+            throw new BadRequestException("The group with the given id does not exist");
+        }
+        return groupEntity.get();
     }
 
     public Page<GroupDto> findALl(PageParams pageParams, Filter filter){
-
+        if (!pageParams.isValid()){
+            throw new BadRequestException("Please enter the correct arguments");
+        }
        if ((filter.getCategory()==null || filter.getCategory().isEmpty()) && (filter.getName()==null || filter.getName().isEmpty()) )
         return GroupConverter.entityPageToDtoPage(
                 groupRepo.findAll(PageRequest.of(
-                pageParams.getPageNumber(),
-                pageParams.getPageSize(),
+                Integer.parseInt(pageParams.getPageNumber()),
+                        Integer.parseInt(pageParams.getPageSize()),
                 pageParams.getSort(),
                 pageParams.getSortField())));
        else if (filter.getName()!=null && !filter.getName().isEmpty()) {
            return GroupConverter.entityPageToDtoPage(
                    groupRepo.findAllByGroupNameAndActiveTrue(
                            filter.getName(),PageRequest.of(
-                           pageParams.getPageNumber(),
-                           pageParams.getPageSize(),
+                                   Integer.parseInt(pageParams.getPageNumber()),
+                                   Integer.parseInt( pageParams.getPageSize()),
                            pageParams.getSort(),
                            pageParams.getSortField())));
        }
@@ -121,8 +125,8 @@ public class GroupService {
            return GroupConverter.entityPageToDtoPage(
                    groupRepo.findAllByCategoryEntityCategoryNameAndActiveTrue(
                            filter.getCategory(),PageRequest.of(
-                                   pageParams.getPageNumber(),
-                                   pageParams.getPageSize(),
+                                   Integer.parseInt(pageParams.getPageNumber()),
+                                   Integer.parseInt( pageParams.getPageSize()),
                                    pageParams.getSort(),
                                    pageParams.getSortField())));
 

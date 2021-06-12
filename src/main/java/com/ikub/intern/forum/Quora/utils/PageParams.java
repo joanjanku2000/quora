@@ -5,12 +5,21 @@ import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class PageParams {
-    private Integer pageNumber = 0;
-    private Integer pageSize = 10;
+    private String pageNumber = String.valueOf(0);
+    private String pageSize = String.valueOf(10);
     private Sort.Direction sort = Sort.Direction.ASC;
     private String sortField = "name";
+
+    public boolean isValid(){
+      try{
+          int p = Integer.parseInt(pageNumber);
+          int s = Integer.parseInt(pageSize);
+      } catch (NumberFormatException e){
+          return false;
+      }
+      return true;
+    }
 }

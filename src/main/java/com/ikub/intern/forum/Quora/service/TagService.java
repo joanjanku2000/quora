@@ -47,7 +47,9 @@ public class TagService {
 
     public TagEntity findById(Long id){
         TagEntity tagEntity = tagRepo.findById(id).orElse(null);
-        if (tagEntity==null) throw new BadRequestException("The tag with the given id does not exist");
+        if (tagEntity==null) {
+            throw new BadRequestException("The tag with the given id does not exist");
+        }
         return tagEntity;
     }
 

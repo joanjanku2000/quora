@@ -101,8 +101,8 @@ public class GroupController {
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params, groupDto.getId());
 
-        if (params.getPageNumber() > questions.getTotalPages() - 1 || params.getPageNumber() < 0) {
-            params.setPageNumber(0);
+        if (Integer.parseInt(params.getPageNumber()) > questions.getTotalPages() - 1 ) {
+            params.setPageNumber(String.valueOf(0));
             questions = questionService.findAllInAGroup(params, groupDto.getId());
         }
         httpSession.setAttribute("group", groupDto.getId());

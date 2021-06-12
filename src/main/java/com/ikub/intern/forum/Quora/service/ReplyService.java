@@ -103,12 +103,16 @@ public class ReplyService {
         if (!replyEntity.isPresent()){
             throw new NotFoundException("Reply Not Found") ;
         }
-        logger.info("Succes on find by id {} "+replyEntity);
+        logger.info("Succes on find by id {} ",replyEntity);
         return ReplyConverter.entityToDto(replyEntity.get());
     }
     public Page<ReplyDto> getRepliesOfQuestion(Long id, PageParams pageParams){
+        if (!pageParams.isValid()){
+            throw new BadRequestException("Please enter the correct arguments");
+        }
         return ReplyConverter.entityPageToDtoPage(
-                replyRepo.findAllByQuestionIdAndActiveTrueOrderByCreatedAtDesc(id, PageRequest.of(pageParams.getPageNumber()
-                        ,pageParams.getPageSize())));
+                replyRepo.findAllByQuestionIdAndActiveTrueOrderByCreatedAtDesc(id,
+                        PageRequest.of( Integer.parseInt(pageParams.getPageNumber())
+                        , Integer.parseInt(pageParams.getPageSize()))));
     }
 }

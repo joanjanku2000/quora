@@ -259,8 +259,8 @@ public class UserController {
                 = LoggedUserUtil.getLoggedUserDto(httpSession);
         Page<Feed> feed
                 = userService.feed(loggedUser.getId(), params);
-        if (params.getPageNumber() > feed.getTotalPages() - 1) {
-            params.setPageNumber(0);
+        if (Integer.parseInt(params.getPageNumber())> feed.getTotalPages() - 1) {
+            params.setPageNumber(String.valueOf(0));
             feed = userService.feed(loggedUser.getId(), params);
         }
         model.addAttribute("feed", feed);

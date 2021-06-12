@@ -76,6 +76,9 @@ public class QuestionService {
         return QuestionConverter.entityToDto(questionEntity.get());
     }
     public Page<QuestionDto> findAllInAGroup(PageParams pageParams,Long id){
+        if (!pageParams.isValid()){
+            throw new BadRequestException("Please enter the correct arguments");
+        }
         Optional<UserGroupEntity> userGroupEntity = groupRepo.findById(id);
         if (!userGroupEntity.isPresent()){
             throw new NotFoundException("Group with id "+id+" wasn't found");
@@ -87,7 +90,7 @@ public class QuestionService {
         pageParams.setSortField("date");
         logger.info("Finding all questions in group {} ",userGroupEntity.get().getGroupName());
         return QuestionConverter.entityPageToDtoPage(questionsRepo.findAllByGroupId(id,
-                PageRequest.of(pageParams.getPageNumber(),pageParams.getPageSize()
+                PageRequest.of( Integer.valueOf(pageParams.getPageNumber()), Integer.valueOf(pageParams.getPageSize())
                 ,pageParams.getSort(),pageParams.getSortField())));
     }
     private boolean userIsPartOfTheGroup(UserEntity user, UserGroupEntity groupEntity){

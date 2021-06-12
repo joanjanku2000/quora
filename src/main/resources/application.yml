@@ -46,3 +46,6 @@ server:
 
 
 
+defaultPageNumber : 0
+defaultSortField : name
+defaultPageSize : 10

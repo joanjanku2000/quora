@@ -33,7 +33,6 @@ public class UserService  {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-
     public List<UserEntity> findAll(){
         return userRepo.findAll();
     }
@@ -150,6 +149,9 @@ public class UserService  {
         return ids;
     }
     public Page<Feed> feed(Long uid, PageParams params){
-        return userRepo.feed(uid, PageRequest.of(params.getPageNumber(),params.getPageSize()));
+        if (!params.isValid()){
+            throw new BadRequestException("Please enter the correct arguments");
+        }
+        return userRepo.feed(uid, PageRequest.of(Integer.parseInt(params.getPageNumber()), Integer.parseInt(params.getPageSize())));
     }
 }
