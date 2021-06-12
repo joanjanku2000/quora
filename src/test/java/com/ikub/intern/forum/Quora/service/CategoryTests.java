@@ -33,26 +33,18 @@ public class CategoryTests {
     CategoryRepo categoryRepo;
 
     @InjectMocks
-    CategoryService categoryService;
-    static CategoryEntity categoryEntity;
-    static UserEntity userEntity;
-    static CategoryCreateRequest categoryCreateRequest ;
-
-    @BeforeAll
-    static void initialize(){
-        userEntity = new UserEntity("test","test","test",
-                "m","usernameTest",
-                LocalDate.ofYearDay(2000,23),
-                LocalDateTime.of(2021, 3, 1,12,1),
-                "user",true);
-        categoryCreateRequest = new CategoryCreateRequest("name");
-        categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,userEntity);
-    }
-
+     CategoryService categoryService;
 
     @Test
     @DisplayName("Saving category ")
     void saveCategory(){
+
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("name"); ;
         when(categoryRepo.findByCategoryName(categoryCreateRequest.getName()))
                 .thenReturn(null);
         categoryService.saveCategory(categoryCreateRequest,userEntity);
@@ -60,8 +52,14 @@ public class CategoryTests {
     }
     @Test
     @DisplayName("Saving category fail")
-    void saveCategoryFail(){
-
+    void saveCategoryFailCategoryExists(){
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("name"); ;
+        CategoryEntity categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,userEntity);
         when(categoryRepo.findByCategoryName(categoryCreateRequest.getName()))
                 .thenReturn(categoryEntity);
        assertThrows(BadRequestException.class,() ->{
@@ -72,6 +70,13 @@ public class CategoryTests {
     @DisplayName("Get by id success")
     void findById(){
         Long id = 1L;
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("name"); ;
+        CategoryEntity categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,userEntity);
         Optional<CategoryEntity> categoryEntityOptional = Optional.of(categoryEntity);
         when(categoryRepo.findById(id)).thenReturn(categoryEntityOptional);
         assertDoesNotThrow(() -> {
@@ -81,7 +86,7 @@ public class CategoryTests {
     }
     @Test
     @DisplayName("Get by id failure")
-    void findByIdFailure(){
+    void findByIdFailureNotFound(){
         Long notFoundID = 2L;
         assertThrows(BadRequestException.class,() -> {
             categoryService.findById(notFoundID);
@@ -91,6 +96,11 @@ public class CategoryTests {
     @Test
     @DisplayName("Find all test")
     void findAll(){
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
         List<CategoryEntity> categoryEntityList = Arrays.asList(
                 new CategoryEntity(1L,"name",userEntity,LocalDateTime.of(2021,2,3,4,5),true),
                 new CategoryEntity(2L,"name2",userEntity,LocalDateTime.of(2021,2,3,4,5),true)
@@ -104,6 +114,13 @@ public class CategoryTests {
     @DisplayName("Delete Success ")
     void delete(){
         Long id = 1L;
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("name"); ;
+        CategoryEntity categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,userEntity);
         Optional<CategoryEntity> categoryEntityOptional = Optional.of(categoryEntity);
         when(categoryRepo.findById(id)).thenReturn(categoryEntityOptional);
         assertDoesNotThrow(() -> {
