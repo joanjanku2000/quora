@@ -2,9 +2,12 @@ package com.ikub.intern.forum.Quora.controller;
 
 import com.ikub.intern.forum.Quora.dto.category.CategoryCreateRequest;
 import com.ikub.intern.forum.Quora.dto.category.CategoryDto;
+import com.ikub.intern.forum.Quora.dto.user.UserDto;
 import com.ikub.intern.forum.Quora.entities.CategoryEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.service.CategoryService;
+import com.ikub.intern.forum.Quora.service.UserService;
+import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,14 +26,17 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/save")
     public String saveCategory(@RequestBody CategoryCreateRequest categoryCreateRequest, Model model, HttpSession httpSession){
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
+        UserEntity createdBy = userService.find(loggedUser.getId());
         List<CategoryDto> categoryEntityList;
         try{
             if (!categoryCreateRequest.getName().isEmpty()){
-                categoryService.saveCategory(categoryCreateRequest,loggedUser);
+                categoryService.saveCategory(categoryCreateRequest,createdBy);
             }
             categoryEntityList
                     = categoryService.findAll();

@@ -19,23 +19,18 @@ public class OAuthSecurityConfiguration extends WebSecurityConfigurerAdapter  {
     protected void configure(HttpSecurity http) throws Exception {
             http
                     .authorizeRequests()
-            .antMatchers("/oauth2/authorization/google").permitAll()
-            .antMatchers("/users/login").permitAll()
+                    .antMatchers("/oauth2/authorization/google").permitAll()
+                    .antMatchers("/users/login").permitAll()
+                    .antMatchers("/static/bcg.jpg").permitAll()
+                    .antMatchers("/**").authenticated()
+                    .antMatchers("/category/save").hasRole("admin")
+                    .and()
+                    .oauth2Login()
+                    .defaultSuccessUrl("/users/postlogin",true)
+                    .loginPage("/users/login")
+                    .userInfoEndpoint().userService(customOauth2UserService);
 
-            .antMatchers("/**").authenticated()
-            .antMatchers("/category/save").hasRole("admin")
-                    .and().logout()
-                    .invalidateHttpSession(true).deleteCookies("JSESSIONID")
-                    .clearAuthentication(true)
-                    .logoutSuccessUrl("/users/login")
-            .and()
-            .oauth2Login()
-            .defaultSuccessUrl("/users/postlogin",true)
-            .loginPage("/users/login")
-            .userInfoEndpoint().userService(customOauth2UserService);
-
-            http.csrf().disable();
-
+            //http.csrf().disable();
     }
 
 

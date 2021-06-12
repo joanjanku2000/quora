@@ -4,10 +4,12 @@ import com.ikub.intern.forum.Quora.dto.question.QuestionCreateRequest;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
 import com.ikub.intern.forum.Quora.dto.question.QuestionUpdateRequest;
 import com.ikub.intern.forum.Quora.dto.reply.ReplyDto;
+import com.ikub.intern.forum.Quora.dto.user.UserDto;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.service.QuestionService;
 import com.ikub.intern.forum.Quora.service.ReplyService;
 import com.ikub.intern.forum.Quora.service.UserService;
+import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,8 +42,8 @@ public class QuestionController {
         else {
             map.addAttribute("error", "Question cannot be empty");
         }
-        UserEntity loggedUser =
-                (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser
+                = LoggedUserUtil.getLoggedUserDto(httpSession);
         params.setPageNumber(0); // always go to first page when new question is added
         List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
         Page<QuestionDto> questions
@@ -55,7 +57,8 @@ public class QuestionController {
     public String getQuestionOfGroup(@PathVariable Long id, PageParams params,ModelMap map,HttpSession httpSession){
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,id);
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser
+                = LoggedUserUtil.getLoggedUserDto(httpSession);
         List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
         map.addAttribute("questions",questions);
         map.addAttribute("loggedUser",loggedUser);
@@ -66,8 +69,8 @@ public class QuestionController {
     public ModelAndView findById(@RequestParam Long id,PageParams params,HttpSession httpSession){
 
         httpSession.setAttribute("question",id);
-        UserEntity loggedUser =
-                (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser
+                = LoggedUserUtil.getLoggedUserDto(httpSession);
         QuestionDto questionDto
                 =  questionService.findById(loggedUser.getId(),id);
         ModelAndView modelAndView = new ModelAndView("question");
@@ -89,7 +92,7 @@ public class QuestionController {
     @PutMapping("/update/question/{id}")
     public String updateQuestion(@PathVariable Long id, @RequestBody QuestionUpdateRequest requestForUpdate,
                                PageParams params,HttpSession httpSession,ModelMap map){
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
 
         if (!requestForUpdate.getQuestion().isEmpty()){
             questionService.updateQuestion(id,loggedUser.getId(),requestForUpdate);
@@ -106,7 +109,7 @@ public class QuestionController {
 
     @DeleteMapping("/delete/{id}")
     public String deleteQuestion(@PathVariable Long id,Long uid,ModelMap map, PageParams params,HttpSession httpSession){
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
         questionService.deleteQuestion(id,loggedUser.getId());
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,(Long) httpSession.getAttribute("group"));

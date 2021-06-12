@@ -5,6 +5,8 @@
   <title>Tags</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+  <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>Categories</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -42,12 +44,15 @@
 <script th:inline="javascript">
 
   let saveTag = () => {
+    let token = $('#_csrf').attr('content');
+    let header = $('#_csrf_header').attr('content');
     let req = {};
     req.tagName = document.getElementById("name").value;
     if (req.tagName!==""){
       let settings = {
         beforeSend: function(xhr,options)
         {
+          xhr.setRequestHeader(header,token);
           xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
         },
         type:'POST',

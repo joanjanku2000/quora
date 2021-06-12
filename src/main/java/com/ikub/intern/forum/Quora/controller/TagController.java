@@ -2,12 +2,15 @@ package com.ikub.intern.forum.Quora.controller;
 
 import com.ikub.intern.forum.Quora.dto.tag.TagDto;
 import com.ikub.intern.forum.Quora.dto.tag.TagDtoForCreate;
+import com.ikub.intern.forum.Quora.dto.user.UserDto;
 import com.ikub.intern.forum.Quora.entities.TagEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
 import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
 import com.ikub.intern.forum.Quora.exceptions.NotFoundException;
 import com.ikub.intern.forum.Quora.service.TagService;
+import com.ikub.intern.forum.Quora.service.UserService;
+import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +29,8 @@ import java.util.List;
 public class TagController {
     @Autowired
     private TagService tagService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public String findAll(Model model){
@@ -35,11 +40,12 @@ public class TagController {
     }
     @PostMapping("/save")
     public String save(@Valid @RequestBody TagDtoForCreate tagDtoForCreate, Model model, HttpSession httpSession){
-        UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
+        UserEntity createdBy = userService.find(loggedUser.getId());
         List<TagDto> tagDtoList;
      try {
          if (!tagDtoForCreate.getTagName().isEmpty())
-         tagService.saveTag(tagDtoForCreate,userEntity);
+         tagService.saveTag(tagDtoForCreate,createdBy);
          tagDtoList = tagService.findALl();
          model.addAttribute("tags",tagDtoList);
      } catch (NotAllowedException e){
@@ -50,6 +56,9 @@ public class TagController {
      }
      return "tags::tags";
     }
+
+
+
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id){
         tagService.deleteTag(id);

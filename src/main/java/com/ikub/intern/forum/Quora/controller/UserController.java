@@ -17,6 +17,7 @@ import com.ikub.intern.forum.Quora.service.CategoryService;
 import com.ikub.intern.forum.Quora.service.GroupService;
 import com.ikub.intern.forum.Quora.service.UserService;
 import com.ikub.intern.forum.Quora.utils.Filter;
+import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -80,16 +81,16 @@ public class UserController {
     public String update(@Valid @ModelAttribute UserUpdateRequest userUpdateRequest
             , Model model, HttpSession httpSession) {
 
-        UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
-        UserDto userDto = UserConverter.entityToDto(userEntity);
+        UserDto userDto = (UserDto) httpSession.getAttribute("loggedUser");
+    //    UserDto userDto = UserConverter.entityToDto(userEntity);
         List<UserGroup> userGroupRequests
-                = userService.findUserJoinRequests(userEntity.getId());
+                = userService.findUserJoinRequests(userDto.getId());
         model.addAttribute("user", userDto);
         model.addAttribute("requests", userGroupRequests);
         model.addAttribute("userUpdateDTO", userUpdateRequest);
 
         try {
-            userService.update(userEntity.getId(), userUpdateRequest);
+            userService.update(userDto.getId(), userUpdateRequest);
             return "redirect:/users/profile";
         } catch (BadRequestException e) {
             model.addAttribute("error", "Sorry, that username was already taken");
@@ -99,8 +100,9 @@ public class UserController {
     }
 
     @PostMapping("/group/{gid}")
-    public String saveUserToGroup(@PathVariable Long gid, Filter filter, PageParams params, HttpSession httpSession, ModelMap model) {
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+    public String saveUserToGroup(@PathVariable Long gid, Filter filter, PageParams params,
+                                  HttpSession httpSession, ModelMap model) {
+        UserDto loggedUser = (UserDto) httpSession.getAttribute("loggedUser");
         userService.addUserToGroup(loggedUser.getId(), gid);
 
         Page<GroupDto> groupDtos = groupService.findALl(params, filter);
@@ -120,15 +122,14 @@ public class UserController {
     public String activateMembership(@PathVariable Long uid, @PathVariable Long gid, ModelMap model, PageParams params, HttpSession httpSession) {
         userService.activateUserMembership(uid, gid);
 
-        UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto userDto = (UserDto) httpSession.getAttribute("loggedUser");
         UserGroupEntity groupEntity = groupService.findById(gid);
-        if (groupEntity.getAdmin().getId() != userEntity.getId()) {
+        if (groupEntity.getAdmin().getId() != userDto.getId()) {
             model.addAttribute("error", "You are not this group's admin");
             return "profile::error";
         }
 
-        UserDto userDto = UserConverter.entityToDto(userEntity);
-        List<UserGroup> userGroupRequests = userService.findUserJoinRequests(userEntity.getId());
+        List<UserGroup> userGroupRequests = userService.findUserJoinRequests(userDto.getId());
         model.addAttribute("user", userDto);
         model.addAttribute("requests", userGroupRequests);
         return "profile::requests";
@@ -138,25 +139,32 @@ public class UserController {
     public String deleteMembership(@PathVariable Long gid, Filter filter,
                                    HttpSession httpSession, PageParams params, ModelMap model) {
 
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
-        userService.deleteMembership(loggedUser.getId(), gid);
+        UserDto userDto = (UserDto) httpSession.getAttribute("loggedUser");
+        userService.deleteMembership(userDto.getId(), gid);
 
         Page<GroupDto> groupDtos = groupService.findALl(params, filter);
-        List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
+        List<Long> groupRequests = userService.groupsRequestedToJoin(userDto.getId());
         for (GroupDto groupDto : groupDtos) {
             List<UserDto> users = userService.findUsersInGroup(groupDto.getId());
             groupDto.setUsers(users);
         }
-        model.addAttribute("loggedUser", loggedUser);
+        model.addAttribute("loggedUser", userDto);
         model.addAttribute("groups", groupDtos);
         model.addAttribute("groupRequests", groupRequests);
         return "discover_groups::groups";
     }
 
     @GetMapping("/login")
-    public ModelAndView login() {
-        ModelAndView modelAndView = new ModelAndView("login");
-        return modelAndView;
+    public String login(HttpSession httpSession,Model model) {
+        if (httpSession.getAttribute("loggedUser")!=null){
+            UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
+            List<UserGroup> userGroupRequests
+                    = userService.findUserJoinRequests(loggedUser.getId());
+            model.addAttribute("user", loggedUser);
+            model.addAttribute("requests", userGroupRequests);
+            return "profile";
+        }
+        return "login";
     }
 
     @GetMapping("/profile")
@@ -167,14 +175,13 @@ public class UserController {
                 = (CustomOauth2User) authentication.getPrincipal();
         ModelAndView modelAndView
                 = new ModelAndView("profile");
-        UserEntity userEntity
-                = userService.findByEmail(principal.getEmail());
-
-        httpSession.setAttribute("loggedUser", userEntity);
         UserDto userDto
-                = UserConverter.entityToDto(userEntity);
+                = UserConverter.entityToDto(userService.findByEmail(principal.getEmail()));
+
+        httpSession.setAttribute("loggedUser", userDto);
+
         List<UserGroup> userGroupRequests
-                = userService.findUserJoinRequests(userEntity.getId());
+                = userService.findUserJoinRequests(userDto.getId());
         modelAndView.addObject("user", userDto);
         modelAndView.addObject("requests", userGroupRequests);
 
@@ -217,7 +224,7 @@ public class UserController {
     @GetMapping("/groups")
     public ModelAndView viewSubscribedGroups(HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView("user_groups");
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = (UserDto) httpSession.getAttribute("loggedUser");
         List<CategoryDto> categoryDtos
                 = categoryService.findAll();
         GroupDtoForCreateUpdate groupDtoForCreateUpdate = new GroupDtoForCreateUpdate();
@@ -242,7 +249,7 @@ public class UserController {
 
     @GetMapping("/feed")
     public String displayFeed(HttpSession httpSession, Model model, PageParams params) {
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
         Page<Feed> feed = userService.feed(loggedUser.getId(), params);
 
         if (params.getPageNumber() > feed.getTotalPages() - 1 || params.getPageNumber() < 0) {

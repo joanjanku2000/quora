@@ -3,6 +3,8 @@
 <head>
   <title>Question</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+  <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
   <link href=" https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" rel="stylesheet">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -38,6 +40,9 @@
   </style>
   <script th:inline="javascript" >
     function postReply(){
+      let token = $('#_csrf').attr('content');
+      let header = $('#_csrf_header').attr('content');
+
       var replyRequest = {};
       replyRequest.reply = $('#reply').val();
       if (replyRequest.reply===""){
@@ -59,6 +64,7 @@
       var settings = {
         beforeSend: function(xhr,options)
         {
+          xhr.setRequestHeader(header,token);
           xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
         },
         type:'POST',
@@ -71,6 +77,9 @@
       });
     }
     updateReply = function(replyId){
+      let token = $('#_csrf').attr('content');
+      let header = $('#_csrf_header').attr('content');
+
       let currentUrlString = window.location.href;
       let currentUrl = new URL(currentUrlString);
       let pageSize =  10;
@@ -92,6 +101,7 @@
       let settings = {
         beforeSend: function(xhr,options)
         {
+          xhr.setRequestHeader(header,token);
           xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
         },
         type:'PUT',
@@ -104,6 +114,9 @@
       });
     }
     deleteReply = function(replyId){
+      let token = $('#_csrf').attr('content');
+      let header = $('#_csrf_header').attr('content');
+
       let currentUrlString = window.location.href;
       let currentUrl = new URL(currentUrlString);
       let pageSize =  10;
@@ -116,6 +129,7 @@
       let settings = {
         beforeSend: function(xhr,options)
         {
+          xhr.setRequestHeader(header,token);
           xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
         },
         type:'DELETE',
@@ -139,7 +153,7 @@
       <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/profile" tabindex="-1">Profile</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/feed" tabindex="-1">Feed</a>
+      <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/users/feed?pageNumber=0" tabindex="-1">Feed</a>
     </li>
     <li class="nav-item" >
       <a class="nav-link" href="https://ikub-intern-project.herokuapp.com/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>

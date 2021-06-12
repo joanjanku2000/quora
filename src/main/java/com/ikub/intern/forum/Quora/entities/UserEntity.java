@@ -1,6 +1,7 @@
 package com.ikub.intern.forum.Quora.entities;
 
 import com.ikub.intern.forum.Quora.dto.user.UserGroup;
+import com.ikub.intern.forum.Quora.utils.NativeQueries;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -63,23 +64,12 @@ import java.time.LocalDateTime;
         {
                 @NamedNativeQuery(
                         name = "UserReqs",
-                        query =
-                                "select user_group_connection.id_user as user_id ,users.username as username , " +
-                                        "user_group_connection.id_group as group_id,user_group.group_name as group_name  from user_group_connection " +
-                                        "inner join user_group on user_group.id =  user_group_connection.id_group " +
-                                        " inner join users on user_group_connection.id_user = users.id " +
-                                        "where user_group_connection.id_group in " +
-                                        "(select user_group.id from user_group where user_group.id_administrator = :id) " +
-                                        "and user_group_connection.active=false " +
-                                        "and user_group.active = true",
+                        query = NativeQueries.USER_REQUESTS_NATIVE_QUERY,
 
                         resultSetMapping = "UserRequests"),
                 @NamedNativeQuery(
                         name = "user_group",
-                        query = "select * from users " +
-                                "inner join user_group_connection on users.id = user_group_connection.id_user " +
-                                "where user_group_connection.active = true " +
-                                "and user_group_connection.id_group=?1 order by users.id",
+                        query = NativeQueries.USERS_OF_GROUP,
                         resultSetMapping = "UsersOfGroup"
                 )
 

@@ -23,12 +23,6 @@ spring:
             scope:
               - email
               - public_profile
-#            scope:
-#            - https://www.googleapis.com/auth/user.gender.read
-#            - https://www.googleapis.com/auth/user.birthday.read
-#            - https://www.googleapis.com/auth/userinfo.profile
-#              - email
-#              - profile
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -47,11 +41,8 @@ server:
   port: 8081
   error:
     include-message: always
+    path: /error
 
-#jwt:
-#  secret: secret
-#  clockSkew: 10
-#  validFor: 36000
 
 
 

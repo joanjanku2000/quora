@@ -19,7 +19,7 @@ public interface UserGroupRepo extends JpaRepository<UserGroupEntity,Long> {
      Optional<UserGroupEntity> findByGroupName(@Param("name") String name);
 
     @Query("Select g from UserGroupEntity g where g.active=true")
-     Page<UserGroupEntity> findAll(Pageable pageable);
+    Page<UserGroupEntity> findAll(Pageable pageable);
 
     @Query("Select g from UserGroupEntity g where g.active=true and g.categoryEntity.categoryName=:name")
     Page<UserGroupEntity> findAllByCategoryEntityCategoryNameAndActiveTrue(@Param("name") String name,Pageable pageable);

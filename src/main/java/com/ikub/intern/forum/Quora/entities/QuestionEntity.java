@@ -21,15 +21,18 @@ public class QuestionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     private String question;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="id_user",referencedColumnName = "id")
     private UserEntity user;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="id_group",referencedColumnName = "id")
-    @JsonIgnoreProperties("questions")
     private UserGroupEntity group;
+
     @Column
     private LocalDateTime date;
     @Column

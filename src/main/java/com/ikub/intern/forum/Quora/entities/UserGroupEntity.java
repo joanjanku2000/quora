@@ -2,6 +2,7 @@ package com.ikub.intern.forum.Quora.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ikub.intern.forum.Quora.utils.NativeQueries;
 import lombok.*;
 import org.apache.catalina.User;
 import org.hibernate.annotations.Where;
@@ -33,18 +34,12 @@ import java.util.Set;
 
 @NamedNativeQuery(
         name="groups_user",
-        query =  "select * from user_group " +
-                "inner join user_group_connection on user_group.id = user_group_connection.id_group " +
-                "where user_group_connection.active = true and user_group.active = true " +
-                "and user_group_connection.id_user=?1 order by user_group.id ",
+        query = NativeQueries.GROUPS_OF_USER_ACTIVE,
         resultSetMapping = "GroupsOfUser"
 )
 @NamedNativeQuery(
         name="groups_user_inactive",
-        query =  "select * from user_group " +
-                "inner join user_group_connection on user_group.id = user_group_connection.id_group " +
-                "where user_group_connection.active = false and user_group.active = true " +
-                "and user_group_connection.id_user=?1 order by user_group.id ",
+        query =  NativeQueries.GROUPS_OF_USER_INACTIVE,
         resultSetMapping = "GroupsOfUser"
 )
 @Entity
@@ -80,14 +75,12 @@ public class UserGroupEntity {
     private UserEntity admin;
     @OneToOne
     @JoinColumn(name="id_category",referencedColumnName = "id")
-    @JsonIgnoreProperties("createdBy")
+//    @JsonIgnoreProperties("createdBy")
     private CategoryEntity categoryEntity;
     @Column
     private boolean active;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="id_group",referencedColumnName = "id")
-    @Where(clause = "active=true")
-   // @OrderBy("date DESC")
     private Set<QuestionEntity> questions;
 }

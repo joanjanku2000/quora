@@ -37,6 +37,7 @@ public class CategoryTests {
     static CategoryEntity categoryEntity;
     static UserEntity userEntity;
     static CategoryCreateRequest categoryCreateRequest ;
+
     @BeforeAll
     static void initialize(){
         userEntity = new UserEntity("test","test","test",
@@ -73,7 +74,6 @@ public class CategoryTests {
         Long id = 1L;
         Optional<CategoryEntity> categoryEntityOptional = Optional.of(categoryEntity);
         when(categoryRepo.findById(id)).thenReturn(categoryEntityOptional);
-
         assertDoesNotThrow(() -> {
             categoryService.findById(id);
         });

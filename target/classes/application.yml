@@ -1,11 +1,11 @@
 spring:
   datasource:
-    password: 9649a8ea451d4ae3fbcdcd7fee278cee89a89c0ffef59de03e2e4d5837f2dd1b
-    url: jdbc:postgresql://ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/dcrf5fkmekslr0
-    username: ttsebsphsevlgl
-#    url: jdbc:postgresql://localhost:5432/forum_db
-#    username: postgres
-#    password: mausimj
+#    password: 9649a8ea451d4ae3fbcdcd7fee278cee89a89c0ffef59de03e2e4d5837f2dd1b
+#    url: jdbc:postgresql://ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/dcrf5fkmekslr0
+#    username: ttsebsphsevlgl
+    url: jdbc:postgresql://localhost:5432/forum_db
+    username: postgres
+    password: mausimj
     platform: POSTGRESQL
   security:
     oauth2:
@@ -47,6 +47,7 @@ server:
   port: 8081
   error:
     include-message: always
+    path: /error
 
 #jwt:
 #  secret: secret

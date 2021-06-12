@@ -80,10 +80,12 @@ public class GroupService {
         return GroupConverter.entityToDto(groupRepo.save(groupEntity.get()));
     }
 
-    @Transactional
+    @org.springframework.transaction.annotation.Transactional
     public void deleteGroup(Long id){
         UserGroupEntity groupEntity = groupRepo.findById(id).orElse(null);
-        if (groupEntity==null) throw new BadRequestException("The group with the given id does not exist");
+        if (groupEntity==null) {
+            throw new BadRequestException("The group with the given id does not exist");
+        }
         groupEntity.setActive(false);
         for (QuestionEntity questionEntity : groupEntity.getQuestions()){
             questionEntity.setActive(false);

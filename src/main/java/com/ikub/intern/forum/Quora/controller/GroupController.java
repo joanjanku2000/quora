@@ -10,6 +10,7 @@ import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.entities.UserGroupEntity;
 import com.ikub.intern.forum.Quora.service.*;
 import com.ikub.intern.forum.Quora.utils.Filter;
+import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,7 +39,7 @@ public class GroupController {
 
     @GetMapping("/all")
     public ModelAndView findALL(PageParams params, Filter filter, HttpSession httpSession) {
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
         Page<GroupDto> groupDtos = groupService.findALl(params, filter);
 
         List<Long> groupRequests
@@ -58,7 +59,7 @@ public class GroupController {
 
     @GetMapping("/find")
     public String find(PageParams params, Filter filter, HttpSession httpSession, Model model) {
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = (UserDto) httpSession.getAttribute("loggedUser");
         Page<GroupDto> groupDtos = groupService.findALl(params, filter);
         List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
 
@@ -77,7 +78,7 @@ public class GroupController {
 
     @GetMapping("/{id}")
     public ModelAndView findById(@PathVariable Long id, PageParams params, HttpSession httpSession) {
-        UserEntity loggedUser = (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = (UserDto) httpSession.getAttribute("loggedUser");
         ModelAndView modelAndView = new ModelAndView("group_page");
 
         UserGroupEntity groupEntity = groupService.findById(id);
@@ -129,8 +130,8 @@ public class GroupController {
 
     @PostMapping("/new")
     public ModelAndView save(@ModelAttribute GroupDtoForCreateUpdate groupDto, ModelMap map, HttpSession httpSession) {
-        UserEntity admin = (UserEntity) httpSession.getAttribute("loggedUser");
-        groupService.createGroup(admin.getId(), groupDto);
+        UserDto loggedUser = (UserDto) httpSession.getAttribute("loggedUser");
+        groupService.createGroup(loggedUser.getId(), groupDto);
         return new ModelAndView("redirect:/users/groups", map);
     }
 }

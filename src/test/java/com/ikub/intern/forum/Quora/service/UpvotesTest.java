@@ -111,7 +111,7 @@ public class UpvotesTest {
 
     @Test
     @DisplayName("Save fail: user not found")
-    void saveFail1(){
+    void saveFailUserNotFound(){
         Assertions.assertThrows(BadRequestException.class,
                 () -> upvotesService.upvoteQuestion(userEntity.getId(),questionEntity.getId()));
     }

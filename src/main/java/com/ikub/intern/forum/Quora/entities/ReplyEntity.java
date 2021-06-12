@@ -30,7 +30,7 @@ public class ReplyEntity {
     private UserEntity user;
     @ManyToOne
     @JoinColumn(name="id_question",referencedColumnName = "id")
-    @JsonIgnoreProperties("replies")
+    //@JsonIgnoreProperties("replies")
     private QuestionEntity question;
     @Column
     private boolean active;

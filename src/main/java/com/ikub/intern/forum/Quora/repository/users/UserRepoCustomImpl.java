@@ -95,21 +95,26 @@ public class UserRepoCustomImpl implements UserRepoCustom{
         return list;
     }
     public List<UserGroupEntity> findGroupsOfUser(Long uid){
-        return entityManager.createNamedQuery("groups_user").setParameter(1,uid).getResultList();
+        return entityManager.createNamedQuery("groups_user")
+                .setParameter(1,uid).getResultList();
     }
     @Override
     public List findUsersInGroup(Long gid){
-        return entityManager.createNamedQuery("user_group").setParameter(1,gid).getResultList();
+        return entityManager.createNamedQuery("user_group")
+                .setParameter(1,gid).getResultList();
     }
 
     @Override
     public List<UserGroupEntity> findGroupsRequest(Long uid) {
-        return entityManager.createNamedQuery("groups_user_inactive").setParameter(1,uid).getResultList();
+        return entityManager.createNamedQuery("groups_user_inactive")
+                .setParameter(1,uid).getResultList();
     }
 
     @Override
     public Page<Feed> feed(Long uid, Pageable pageable) {
-        BigInteger size = (BigInteger) entityManager.createNativeQuery(FEED_COUNT).setParameter(1,uid).getSingleResult();
+        BigInteger size =
+                (BigInteger) entityManager.createNativeQuery(FEED_COUNT)
+                        .setParameter(1,uid).getSingleResult();
         long total = size.longValue();
         List feeds = entityManager.createNamedQuery("feed")
                 .setParameter(1,uid)

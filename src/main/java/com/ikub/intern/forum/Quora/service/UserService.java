@@ -131,12 +131,6 @@ public class UserService  {
     public boolean userExists(CustomOauth2User user) {
         UserEntity existingUser = userRepo.findByEmail(user.getEmail());
         return existingUser != null;
-//        if (existingUser == null) {
-//            return false;
-//        } else {
-//            logger.info("Existing user logged");
-//           return true;
-//        }
     }
     public List<UserGroup> findUserJoinRequests(Long uid){
         return userRepo.findAllRequestsToGroups(uid);

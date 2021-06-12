@@ -1,9 +1,11 @@
 package com.ikub.intern.forum.Quora.controller;
 
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
+import com.ikub.intern.forum.Quora.dto.user.UserDto;
 import com.ikub.intern.forum.Quora.entities.*;
 import com.ikub.intern.forum.Quora.service.QuestionService;
 import com.ikub.intern.forum.Quora.service.UpvotesService;
+import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,9 +31,10 @@ public class UpvotesController {
         service.upvoteQuestion(uid,questionId);
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,(Long) httpSession.getAttribute("group"));
-
+        UserDto loggedUser =
+                LoggedUserUtil.getLoggedUserDto(httpSession);
         map.addAttribute("questions",questions);
-        map.addAttribute("loggedUser", (UserEntity) httpSession.getAttribute("loggedUser"));
+        map.addAttribute("loggedUser", loggedUser);
         return "group_page::questions";
     }
 

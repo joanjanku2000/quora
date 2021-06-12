@@ -3,9 +3,11 @@ package com.ikub.intern.forum.Quora.controller;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
 import com.ikub.intern.forum.Quora.dto.reply.ReplyDto;
 import com.ikub.intern.forum.Quora.dto.reply.ReplyRequest;
+import com.ikub.intern.forum.Quora.dto.user.UserDto;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.service.QuestionService;
 import com.ikub.intern.forum.Quora.service.ReplyService;
+import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,29 +37,29 @@ public class ReplyController {
             model.addAttribute("error","Please don't leave an empty body");
         }
 
-        UserEntity user =
-                (UserEntity) httpSession.getAttribute("loggedUser");
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
         QuestionDto questionDto
-                = questionService.findById(user.getId(),questionId);
+                = questionService.findById(loggedUser.getId(),questionId);
         Page<ReplyDto> replies
                 = replyService.getRepliesOfQuestion(questionId,params);
 
         model.addAttribute("replies",replies);
         model.addAttribute("pageSize",params.getPageSize());
         model.addAttribute("questionDto",questionDto);
-        model.addAttribute("user", user);
+        model.addAttribute("user", loggedUser);
         return "question::replies";
     }
     @PutMapping("/{id}")
     public String updateReply(@PathVariable Long id, @Valid @RequestBody ReplyRequest replyRequest, ModelMap model, PageParams params, HttpSession httpSession){
         Long questionId
                 = (Long) httpSession.getAttribute("question");
-        UserEntity user
-                =  (UserEntity) httpSession.getAttribute("loggedUser");
 
-        replyService.update(user.getId(),id,replyRequest);
+        UserDto loggedUser
+                = LoggedUserUtil.getLoggedUserDto(httpSession);
+
+        replyService.update(loggedUser.getId(),id,replyRequest);
         QuestionDto questionDto
-                = questionService.findById(user.getId(),questionId);
+                = questionService.findById(loggedUser.getId(),questionId);
 
         Page<ReplyDto> replyDtos
                 = replyService.getRepliesOfQuestion(questionId,params);
@@ -66,7 +68,7 @@ public class ReplyController {
             replyDtos = replyService.getRepliesOfQuestion(questionId,params);
         }
         model.addAttribute("questionDto",questionDto);
-        model.addAttribute("user",user);
+        model.addAttribute("user",loggedUser);
         model.addAttribute("replies", replyDtos);
         model.addAttribute("pageSize",params.getPageSize());
         return "question::replies";
@@ -74,8 +76,8 @@ public class ReplyController {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id,ModelMap model,PageParams params,HttpSession httpSession){
         Long questionId = (Long) httpSession.getAttribute("question");
-        UserEntity userEntity = (UserEntity) httpSession.getAttribute("loggedUser");
-        replyService.deleteReply(userEntity.getId(),id);
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
+        replyService.deleteReply(loggedUser.getId(),id);
 
         Page<ReplyDto> replyDtos
                 = replyService.getRepliesOfQuestion(questionId,params);
@@ -83,10 +85,10 @@ public class ReplyController {
             params.setPageNumber(0);
             replyDtos = replyService.getRepliesOfQuestion(questionId,params);
         }
-        QuestionDto questionDto = questionService.findById(userEntity.getId(),questionId);
+        QuestionDto questionDto = questionService.findById(loggedUser.getId(),questionId);
 
         model.addAttribute("questionDto",questionDto);
-        model.addAttribute("user", userEntity);
+        model.addAttribute("user", loggedUser);
         model.addAttribute("replies", replyDtos);
         model.addAttribute("pageSize",params.getPageSize());
 

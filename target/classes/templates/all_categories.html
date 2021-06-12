@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categories</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,6 +43,9 @@
 <script th:inline="javascript">
 
  let saveCategory = () => {
+     let token = $('#_csrf').attr('content');
+     let header = $('#_csrf_header').attr('content');
+
      let req = {};
      req.name = document.getElementById("name").value;
      if (req.name!=="")
@@ -49,6 +54,7 @@
              beforeSend: function(xhr,options)
              {
                  xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+                 xhr.setRequestHeader(header,token);
              },
              type:'POST',
              url:"http://localhost:8081/category/save",

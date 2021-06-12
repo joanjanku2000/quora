@@ -3,6 +3,8 @@
 <head>
     <title>Categories</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
     <link href=" https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -22,6 +24,9 @@
     <link rel="stylesheet" href="styles/profile.css">
     <script th:inline="javascript">
         requestToJoin = function(groupId){
+            let token = $('#_csrf').attr('content');
+            let header = $('#_csrf_header').attr('content');
+
             let currentUrlString = window.location.href;
             let currentUrl = new URL(currentUrlString);
             let pageSize =  10;
@@ -50,6 +55,7 @@
             let settings = {
                 beforeSend: function(xhr,options)
                 {
+                    xhr.setRequestHeader(header,token)
                     xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
                 },
                 type:'post',
@@ -61,6 +67,9 @@
             });
         }
         leaveGroup = function(groupId){
+            let token = $('#_csrf').attr('content');
+            let header = $('#_csrf_header').attr('content');
+
             let currentUrlString = window.location.href;
             let currentUrl = new URL(currentUrlString);
             let pageSize =  10;
@@ -89,6 +98,7 @@
             let settings = {
                 beforeSend: function(xhr,options)
                 {
+                    xhr.setRequestHeader(header,token);
                     xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
                 },
                 type:'DELETE',
@@ -101,6 +111,7 @@
             });
         }
         let chooseCategory = () =>{
+
             let chosenC = document.getElementById("category").value;
             let currentUrlString = window.location.href;
             if (chosenC!=="all")
@@ -109,6 +120,9 @@
                 window.location.replace("http://localhost:8081/groups/all?pageNumber=0&sortField=groupName");
         }
         let search = () => {
+            let token = $('#_csrf').attr('content');
+            let header = $('#_csrf_header').attr('content');
+
             let name = document.getElementById("name").value;
             let currentUrlString = window.location.href;
             let currentUrl = new URL(currentUrlString);
@@ -128,17 +142,18 @@
                 sortField = currentUrl.searchParams.get("sortField");
             }
 
-            let urlToGo = "http://localhost:8081/groups/find?pageNumber"+0+"&pageSize="+pageSize+"&sortField="+sortField+"&name="+name;
+            let urlToGo = "http://localhost:8081/groups/find?pageNumber="+0
+                +"&pageSize="+pageSize+"&sortField="+sortField+"&name="+name;
 
             let settings = {
                 beforeSend: function(xhr,options)
                 {
+                    xhr.setRequestHeader(header,token);
                     xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
                 },
                 type:'GET',
                 url:urlToGo,
             }
-
             $.ajax(settings).done(function(result){
                 $('#groups').html(result);
             });
@@ -232,7 +247,6 @@
                                 <td th:text="${group.categoryDto.categoryName}"></td>
                             </tr>
                         </td>
-
                     </tr>
                     <div class="modal fade" th:id="'leaveGroup'+${group.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog">

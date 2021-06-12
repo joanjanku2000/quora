@@ -48,7 +48,6 @@ public class GroupConverter {
                     }
                 }
         );
-
         return page;
     }
 
