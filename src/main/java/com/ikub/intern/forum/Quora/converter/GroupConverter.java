@@ -14,13 +14,8 @@ import java.util.function.Function;
 public class GroupConverter {
 
     public static UserGroupEntity toEntity(GroupDtoForCreateUpdate groupDtoForCreate, CategoryEntity categoryEntity) {
-        UserGroupEntity userGroupEntity = new UserGroupEntity();
-        userGroupEntity.setActive(true);
-        userGroupEntity.setCategoryEntity(categoryEntity);
-        userGroupEntity.setCreatedAt(LocalDateTime.now());
-        userGroupEntity.setGroupName(groupDtoForCreate.getGroupName());
-        userGroupEntity.setDescription(groupDtoForCreate.getDescription());
-        return userGroupEntity;
+        return new UserGroupEntity(groupDtoForCreate.getGroupName(),groupDtoForCreate.getDescription()
+                ,LocalDateTime.now(),categoryEntity,true);
     }
 
     public static GroupDto entityToDto(UserGroupEntity userGroupEntity) {

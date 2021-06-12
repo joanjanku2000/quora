@@ -49,12 +49,8 @@ public class GroupTests {
 
     @BeforeAll
     static void  initialize(){
-
         groupDtoForCreateUpdate = new GroupDtoForCreateUpdate("test","dedsc",1l);
-//        categoryEntity =  new CategoryEntity(1L,"name",userEntity
-//                ,LocalDateTime.of(2021,2,3,4,5),true);
         questionEntitySet = new HashSet<>();
-
     }
 
     @Test

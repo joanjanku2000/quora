@@ -7,9 +7,6 @@ import com.ikub.intern.forum.Quora.dto.user.UserUpdateRequest;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
 import com.ikub.intern.forum.Quora.utils.Roles;
-import com.ikub.intern.forum.Quora.utils.Utils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
 
 import java.time.LocalDate;
@@ -70,9 +67,5 @@ public class UserConverter {
         });
         return set;
     }
-    public static Page<UserDto> entityPageToDtoPage(Page<UserEntity> userEntities){
-        Set<UserEntity> set = Utils.listToSet(userEntities.getContent());
-        List<UserDto> list = Utils.setToList(entitySetToDtoSet(set));
-        return new PageImpl<>(list, userEntities.getPageable(),list.size());
-    }
+
 }

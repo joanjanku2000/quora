@@ -62,7 +62,7 @@ public class UserController {
     @GetMapping("/update")
     public ModelAndView updateView() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        OAuth2User principal = (OAuth2User) authentication.getPrincipal();
+        OAuth2User principal = LoggedUserUtil.getLoggedUser();
         UserEntity userEntity = userService.findByEmail(principal.getAttribute("email"));
         ModelAndView modelAndView = new ModelAndView("update_user");
         UserUpdateRequest userUpdateRequest = new UserUpdateRequest();
@@ -122,7 +122,7 @@ public class UserController {
     public String activateMembership(@PathVariable Long uid, @PathVariable Long gid, ModelMap model, PageParams params, HttpSession httpSession) {
         userService.activateUserMembership(uid, gid);
 
-        UserDto userDto = (UserDto) httpSession.getAttribute("loggedUser");
+        UserDto userDto = LoggedUserUtil.getLoggedUserDto(httpSession);
         UserGroupEntity groupEntity = groupService.findById(gid);
         if (groupEntity.getAdmin().getId() != userDto.getId()) {
             model.addAttribute("error", "You are not this group's admin");
@@ -139,7 +139,7 @@ public class UserController {
     public String deleteMembership(@PathVariable Long gid, Filter filter,
                                    HttpSession httpSession, PageParams params, ModelMap model) {
 
-        UserDto userDto = (UserDto) httpSession.getAttribute("loggedUser");
+        UserDto userDto = LoggedUserUtil.getLoggedUserDto(httpSession);
         userService.deleteMembership(userDto.getId(), gid);
 
         Page<GroupDto> groupDtos = groupService.findALl(params, filter);
@@ -173,6 +173,7 @@ public class UserController {
                 = SecurityContextHolder.getContext().getAuthentication();
         CustomOauth2User principal
                 = (CustomOauth2User) authentication.getPrincipal();
+
         ModelAndView modelAndView
                 = new ModelAndView("profile");
         UserDto userDto
@@ -223,13 +224,17 @@ public class UserController {
 
     @GetMapping("/groups")
     public ModelAndView viewSubscribedGroups(HttpSession httpSession) {
-        ModelAndView modelAndView = new ModelAndView("user_groups");
-        UserDto loggedUser = (UserDto) httpSession.getAttribute("loggedUser");
+        ModelAndView modelAndView
+                = new ModelAndView("user_groups");
+        UserDto loggedUser
+                = LoggedUserUtil.getLoggedUserDto(httpSession);
         List<CategoryDto> categoryDtos
                 = categoryService.findAll();
-        GroupDtoForCreateUpdate groupDtoForCreateUpdate = new GroupDtoForCreateUpdate();
+        GroupDtoForCreateUpdate groupDtoForCreateUpdate
+                = new GroupDtoForCreateUpdate();
         List<GroupDto> groupDtoList
                 = userService.findGroupsOfUser(loggedUser.getId());
+
         modelAndView.addObject("groups", groupDtoList);
         modelAndView.addObject("groupCreateDto", groupDtoForCreateUpdate);
         modelAndView.addObject("categories", categoryDtos);
@@ -240,7 +245,8 @@ public class UserController {
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ModelAndView logoutPage(HttpServletRequest request, HttpServletResponse response, ModelMap map) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth =
+                SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
@@ -249,10 +255,11 @@ public class UserController {
 
     @GetMapping("/feed")
     public String displayFeed(HttpSession httpSession, Model model, PageParams params) {
-        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
-        Page<Feed> feed = userService.feed(loggedUser.getId(), params);
-
-        if (params.getPageNumber() > feed.getTotalPages() - 1 || params.getPageNumber() < 0) {
+        UserDto loggedUser
+                = LoggedUserUtil.getLoggedUserDto(httpSession);
+        Page<Feed> feed
+                = userService.feed(loggedUser.getId(), params);
+        if (params.getPageNumber() > feed.getTotalPages() - 1) {
             params.setPageNumber(0);
             feed = userService.feed(loggedUser.getId(), params);
         }

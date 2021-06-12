@@ -80,38 +80,48 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     @NotNull
     @NotBlank
     private String firstName;
+
     @Column
     @NotNull
     @NotBlank
     private String lastName;
+
     @Column
     @NotNull
     @NotBlank
     private String email;
+
     @Column
     @NotNull
     @NotBlank
     private String gender;
+
     @Column
     @NotNull
     @NotBlank
     private String username;
+
     @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotBlank
     private LocalDate birthday;
+
     @Column
     private LocalDateTime createdAt;
+
     @Column
     @NotBlank
     private LocalDateTime updatedAt;
+
     @Column
     @NotNull
     private String userRole;
+
     @Column
     @NotNull
     private boolean active;

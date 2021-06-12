@@ -21,7 +21,8 @@ public class NativeQueries {
             "inner join user_group_connection on user_group.id = user_group_connection.id_group " +
             "where user_group_connection.active = false and user_group.active = true " +
             "and user_group_connection.id_user=?1 order by user_group.id ";
-    public static final String FEED_QUERY = "select distinct question.id, user_group.group_name, question.question,question.date,count(upvotes_question.id) over (partition by question.id) as count from user_group "+
+    public static final String FEED_QUERY =
+            "select distinct question.id, user_group.group_name, question.question,question.date,count(upvotes_question.id) over (partition by question.id) as count from user_group "+
             "inner join user_group_connection on user_group.id = user_group_connection.id_group " +
             "inner join users on users.id = user_group_connection.id_user " +
             "inner join question on question.id_group=user_group.id " +

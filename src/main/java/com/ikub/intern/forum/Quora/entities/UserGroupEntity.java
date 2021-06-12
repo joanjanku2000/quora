@@ -54,33 +54,48 @@ public class UserGroupEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     private String groupName;
+
     @Column
     private String description;
-    @ManyToOne
-    @JoinColumn(name="created_by",referencedColumnName = "id")
-    @JsonIgnore
-    private UserEntity createdBy;
+
+//    @ManyToOne
+//    @JoinColumn(name="created_by",referencedColumnName = "id")
+//    private UserEntity createdBy;
+
     @ManyToOne
     @JoinColumn(name="updated_by",referencedColumnName = "id")
-    @JsonIgnore
     private UserEntity updatedBy;
+
     @Column
     private LocalDateTime createdAt;
+
     @Column
     private LocalDateTime updatedAt;
+
     @OneToOne
     @JoinColumn(name="id_administrator",referencedColumnName = "id")
     private UserEntity admin;
+
     @OneToOne
     @JoinColumn(name="id_category",referencedColumnName = "id")
-//    @JsonIgnoreProperties("createdBy")
     private CategoryEntity categoryEntity;
+
     @Column
     private boolean active;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="id_group",referencedColumnName = "id")
     private Set<QuestionEntity> questions;
+
+    public UserGroupEntity(String groupName, String description,
+                           LocalDateTime createdAt, CategoryEntity categoryEntity, boolean active) {
+        this.groupName = groupName;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.categoryEntity = categoryEntity;
+        this.active = active;
+    }
 }

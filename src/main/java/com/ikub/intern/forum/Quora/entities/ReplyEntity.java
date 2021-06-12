@@ -23,28 +23,33 @@ public class ReplyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     private String reply;
+
     @ManyToOne
     @JoinColumn(name = "id_user",referencedColumnName = "id")
     private UserEntity user;
+
     @ManyToOne
     @JoinColumn(name="id_question",referencedColumnName = "id")
-    //@JsonIgnoreProperties("replies")
     private QuestionEntity question;
+
     @Column
     private boolean active;
+
     @Column
     private LocalDateTime createdAt;
+
     @Column
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "reply",fetch = FetchType.EAGER)
     @Where(clause = "active=true")
-    @JsonIgnoreProperties("reply")
     private Set<UpvotesReply> upvotesReplyList;
 
-    public ReplyEntity(UserEntity user, QuestionEntity question, String reply, boolean active, LocalDateTime createdAt) {
+    public ReplyEntity(UserEntity user, QuestionEntity question,
+                       String reply, boolean active, LocalDateTime createdAt) {
         this.user = user;
         this.question = question;
         this.reply = reply;

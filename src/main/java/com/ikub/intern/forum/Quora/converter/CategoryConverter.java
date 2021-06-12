@@ -27,8 +27,5 @@ public class CategoryConverter {
         }));
         return list;
     }
-    public static Page<CategoryDto> entityPageToDtoPage(Page<CategoryEntity> categoryEntities){
-        List<CategoryDto> newList = entityListToDtoList(categoryEntities.getContent());
-        return new PageImpl<>(newList,categoryEntities.getPageable(),newList.size());
-    }
+
 }

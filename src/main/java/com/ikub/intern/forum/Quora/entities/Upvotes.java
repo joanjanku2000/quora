@@ -15,11 +15,14 @@ public abstract class Upvotes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @OneToOne
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private UserEntity user;
+
     @Column
     private boolean active;
+
     @Column
     private LocalDateTime upvoteDate;
 

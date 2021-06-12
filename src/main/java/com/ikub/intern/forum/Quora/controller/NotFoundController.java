@@ -4,6 +4,7 @@ import com.ikub.intern.forum.Quora.dto.user.UserDto;
 import com.ikub.intern.forum.Quora.dto.user.UserGroup;
 import com.ikub.intern.forum.Quora.service.UserService;
 import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
+@Slf4j
 public class NotFoundController implements ErrorController {
     @Autowired
     private UserService userService;
@@ -32,6 +34,11 @@ public class NotFoundController implements ErrorController {
                 model.addAttribute("user", loggedUser);
                 model.addAttribute("requests", userGroupRequests);
                 return "profile";
+            }
+            if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()){
+                log.error("500 Internal Server error");
+                model.addAttribute("error","The requested page cannot be shown, please try again");
+                return "not_found";
             }
         }
         return null;

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface QuestionsRepo extends JpaRepository<QuestionEntity,Long>,QuestionRepoCustom {
+public interface QuestionsRepo extends JpaRepository<QuestionEntity,Long> {
      Page<QuestionEntity> findAllByGroupId(Long id, Pageable pageable);
-
 }

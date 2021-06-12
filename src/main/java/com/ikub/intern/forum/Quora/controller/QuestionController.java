@@ -44,7 +44,7 @@ public class QuestionController {
         }
         UserDto loggedUser
                 = LoggedUserUtil.getLoggedUserDto(httpSession);
-        params.setPageNumber(0); // always go to first page when new question is added
+        params.setPageNumber(0);  /** always go to first page when new question is added */
         List<Long> groupRequests = userService.groupsRequestedToJoin(loggedUser.getId());
         Page<QuestionDto> questions
                 = questionService.findAllInAGroup(params,questionCreateRequest.getGroupId());
@@ -77,7 +77,7 @@ public class QuestionController {
         Page<ReplyDto> replyDtos
                 = replyService.getRepliesOfQuestion(id,params);
 
-        //handle page number
+        /** Handling page number mistake */
         if (params.getPageNumber()>replyDtos.getTotalPages()-1 || params.getPageNumber()<0){
             params.setPageNumber(0);
             replyDtos = replyService.getRepliesOfQuestion(id,params);

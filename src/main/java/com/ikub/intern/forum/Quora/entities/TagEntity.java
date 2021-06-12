@@ -23,13 +23,17 @@ public class TagEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     private String tagName;
+
     @ManyToOne
     @JoinColumn(name="created_by",referencedColumnName = "id")
     private UserEntity createdBy;
+
     @Column
     private LocalDateTime createdAt;
+
     @Column
     private boolean active;
 

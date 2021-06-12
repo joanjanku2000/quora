@@ -4,9 +4,6 @@ import com.ikub.intern.forum.Quora.dto.tag.TagDto;
 import com.ikub.intern.forum.Quora.dto.tag.TagDtoForCreate;
 import com.ikub.intern.forum.Quora.entities.TagEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
-import com.ikub.intern.forum.Quora.utils.Utils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,9 +37,4 @@ public class TagConverter {
         return tagDtos;
     }
 
-    public static Page<TagDto> entityPageToDtoPage(Page<TagEntity> tagEntities) {
-        Set<TagEntity> set = Utils.listToSet(tagEntities.getContent());
-        List<TagDto> list = Utils.setToList(entitySetToDtoSet(set));
-        return new PageImpl<>(list, tagEntities.getPageable(), list.size());
-    }
 }

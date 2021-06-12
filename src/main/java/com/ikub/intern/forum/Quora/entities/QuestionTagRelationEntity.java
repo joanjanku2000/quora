@@ -19,12 +19,12 @@ public class QuestionTagRelationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @OneToOne
     @JoinColumn(name="id_tag",referencedColumnName = "id")
-    @Where(clause = "active=true")
     private TagEntity tag;
+
     @OneToOne
     @JoinColumn(name="id_question",referencedColumnName = "id")
-    @Where(clause = "active=true")
     private QuestionEntity question;
 }
