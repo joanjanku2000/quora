@@ -29,36 +29,19 @@ public class UserTests {
     @InjectMocks
     private UserService userService;
 
-    static UserEntity userEntity;
-    static UserEntity userEntity2;
-    static UserCreateRequest userCreateRequest;
-    static UserUpdateRequest userUpdateRequest;
 
-    @BeforeAll
-    static void  initialize(){
-        userEntity = new UserEntity("test","test","test",
-                "m","usernameTest",
-                LocalDate.ofYearDay(2000,23),
-                LocalDateTime.of(2021, 3, 1,12,1),
-                "user",true);
-        userEntity2 = new UserEntity("test","test","different",
+    @Test
+    @DisplayName("Save user -> Success")
+    void save(){
+        UserCreateRequest userCreateRequest =
+                new UserCreateRequest("firstname","lastName",
+                        "test","username","male","2000-02-04");
+        UserEntity userEntity = new UserEntity("test","test","test",
                 "m","usernameTest",
                 LocalDate.ofYearDay(2000,23),
                 LocalDateTime.of(2021, 3, 1,12,1),
                 "user",true);
         userEntity.setId(1L);
-        userEntity2.setId(2L);
-
-        userCreateRequest =
-                new UserCreateRequest("firstname","lastName",
-                        "test","username","male","2000-02-04");
-        userUpdateRequest = new UserUpdateRequest("firstname","lastName",
-                "testEmailDifferent","username","male","2000-02-04");
-    }
-
-    @Test
-    @DisplayName("Save user -> Success")
-    void save(){
         userService.saveUser(userCreateRequest);
         verify(userRepo,times(1)).save(any(UserEntity.class));
     }
@@ -66,12 +49,29 @@ public class UserTests {
     @Test
     @DisplayName("Save user -> fail -> email exists")
     void saveFail1(){
+        UserCreateRequest userCreateRequest =
+                new UserCreateRequest("firstname","lastName",
+                        "test","username","male","2000-02-04");
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        userEntity.setId(1L);
         Mockito.when(userRepo.findByEmail(userCreateRequest.getEmail())).thenReturn(userEntity);
         Assertions.assertThrows(BadRequestException.class,()->userService.saveUser(userCreateRequest));
     }
     @Test
     @DisplayName("Save user -> fail -> username exists")
     void saveFail2(){
+        UserCreateRequest userCreateRequest =
+                new UserCreateRequest("firstname","lastName",
+                        "test","username","male","2000-02-04");
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
         Mockito.when(userRepo.findByUsername(userCreateRequest.getUsername())).thenReturn(userEntity);
         Assertions.assertThrows(BadRequestException.class,()->userService.saveUser(userCreateRequest));
     }
@@ -79,6 +79,14 @@ public class UserTests {
     @Test
     @DisplayName("Update User -> success ")
     void update(){
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        userEntity.setId(1L);
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("firstname","lastName",
+                "testEmailDifferent","username","male","2000-02-04");
         when(userRepo.findById(userEntity.getId())).thenReturn(java.util.Optional.ofNullable(userEntity));
         userService.update(userEntity.getId(),userUpdateRequest);
         verify(userRepo,times(1)).save(userEntity);
@@ -86,11 +94,27 @@ public class UserTests {
     @Test
     @DisplayName("Update User -> fail -> user does not exist ")
     void updateFail1(){
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        userEntity.setId(1L);
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("firstname","lastName",
+                "testEmailDifferent","username","male","2000-02-04");
        Assertions.assertThrows(BadRequestException.class,()->userService.update(userEntity.getId(),userUpdateRequest));
     }
     @Test
     @DisplayName("Update User -> fail -> username exists ")
     void updateFail2() {
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        userEntity.setId(1L);
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("firstname","lastName",
+                "testEmailDifferent","username","male","2000-02-04");
         when(userRepo.findById(userEntity.getId())).thenReturn(java.util.Optional.ofNullable(userEntity));
         when(userRepo.findByUsername(userUpdateRequest.getUsername())).thenReturn(userEntity);
         Assertions.assertThrows(BadRequestException.class,()->userService.update(userEntity.getId(),userUpdateRequest));
@@ -98,6 +122,21 @@ public class UserTests {
     @Test
     @DisplayName("Update User -> fail -> email exists ")
     void updateFail3() {
+        UserEntity userEntity = new UserEntity("test","test","test",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+        userEntity.setId(1L);
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("firstname","lastName",
+                "testEmailDifferent","username","male","2000-02-04");
+        UserEntity userEntity2  = new UserEntity("test","test","different",
+                "m","usernameTest",
+                LocalDate.ofYearDay(2000,23),
+                LocalDateTime.of(2021, 3, 1,12,1),
+                "user",true);
+
+        userEntity2.setId(2L);
         when(userRepo.findById(userEntity.getId())).thenReturn(java.util.Optional.ofNullable(userEntity2));
         when(userRepo.findByEmail(userUpdateRequest.getEmail())).thenReturn(userEntity);
         Assertions.assertThrows(BadRequestException.class,

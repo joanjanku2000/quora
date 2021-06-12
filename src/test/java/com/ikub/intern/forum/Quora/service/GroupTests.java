@@ -44,21 +44,15 @@ public class GroupTests {
     @InjectMocks
     private GroupService groupService;
 
-    static CategoryEntity categoryEntity;
-    static UserEntity userEntity;
     static GroupDtoForCreateUpdate groupDtoForCreateUpdate ;
     static Set<QuestionEntity> questionEntitySet;
 
     @BeforeAll
     static void  initialize(){
-        userEntity = new UserEntity("test","test","test",
-                "m","usernameTest",
-                LocalDate.ofYearDay(2000,23),
-                LocalDateTime.of(2021, 3, 1,12,1),
-                "user",true);
+
         groupDtoForCreateUpdate = new GroupDtoForCreateUpdate("test","dedsc",1l);
-        categoryEntity =  new CategoryEntity(1L,"name",userEntity
-                ,LocalDateTime.of(2021,2,3,4,5),true);
+//        categoryEntity =  new CategoryEntity(1L,"name",userEntity
+//                ,LocalDateTime.of(2021,2,3,4,5),true);
         questionEntitySet = new HashSet<>();
 
     }
@@ -66,12 +60,17 @@ public class GroupTests {
     @Test
     @DisplayName("Saving group success")
     void saveGroup(){
-        userEntity.setId(1l);
+        Instantiators instantiators = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
+        CategoryEntity categoryEntity = instantiators.getCategory();
         when(userRepo.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
         when(categoryRepo.findById(categoryEntity.getId())).thenReturn(Optional.of(categoryEntity));
         when(groupRepo.findByGroupName(groupDtoForCreateUpdate.getGroupName())).thenReturn(Optional.ofNullable(null));
-        UserGroupEntity userGroupEntity = GroupConverter.toEntity(groupDtoForCreateUpdate,categoryEntity);
+
+        UserGroupEntity userGroupEntity
+                = GroupConverter.toEntity(groupDtoForCreateUpdate,categoryEntity);
         userGroupEntity.setId(2l);
+
         when(groupRepo.save(any(UserGroupEntity.class))).thenReturn(userGroupEntity);
 
         groupService.createGroup(userEntity.getId(),groupDtoForCreateUpdate);
@@ -83,6 +82,10 @@ public class GroupTests {
     @Test
     @DisplayName("Saving group fail user not exist")
     void saveGroupFail1(){
+        Instantiators instantiators = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
+        CategoryEntity categoryEntity = instantiators.getCategory();
+
         when(categoryRepo.findById(categoryEntity.getId())).thenReturn(Optional.of(categoryEntity));
         Assertions.assertThrows(NotFoundException.class, () -> {
             groupService.createGroup(userEntity.getId(),groupDtoForCreateUpdate);
@@ -91,6 +94,9 @@ public class GroupTests {
     @Test
     @DisplayName("Saving group fail Category doesn't not exist")
     void saveGroupFail2(){
+        Instantiators instantiators = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
+
         when(userRepo.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
         Assertions.assertThrows(BadRequestException.class, () -> {
             groupService.createGroup(userEntity.getId(),groupDtoForCreateUpdate);
@@ -100,7 +106,10 @@ public class GroupTests {
     @Test
     @DisplayName("Saving group fail, duplicate group name")
     void saveGroupFail3(){
-        userEntity.setId(1l);
+        Instantiators instantiators = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
+        CategoryEntity categoryEntity = instantiators.getCategory();
+
         when(categoryRepo.findById(categoryEntity.getId())).thenReturn(Optional.of(categoryEntity));
         when(userRepo.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
         UserGroupEntity userGroupEntity = GroupConverter.toEntity(groupDtoForCreateUpdate,categoryEntity);
@@ -114,7 +123,10 @@ public class GroupTests {
     @Test
     @DisplayName("Update passes")
     void updateGroup() {
-        userEntity.setId(1l);
+        Instantiators instantiators = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
+        CategoryEntity categoryEntity = instantiators.getCategory();
+
         when(categoryRepo.findById(categoryEntity.getId())).thenReturn(Optional.of(categoryEntity));
         when(groupRepo.findByGroupName(groupDtoForCreateUpdate.getGroupName())).thenReturn(Optional.ofNullable(null));
         UserGroupEntity userGroupEntity

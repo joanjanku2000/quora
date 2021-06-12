@@ -5,6 +5,7 @@ import com.ikub.intern.forum.Quora.dto.tag.TagDtoForCreate;
 import com.ikub.intern.forum.Quora.entities.TagEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
+import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
 import com.ikub.intern.forum.Quora.repository.TagRepo;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -59,10 +60,10 @@ public class TagTests {
     }
     @Test
     @DisplayName("Saving tag fail")
-    void saveCategoryFail(){
+    void saveTagFail(){
         when(tagRepo.findByTagName(tagDtoForCreate.getTagName()))
                 .thenReturn(Optional.ofNullable(tagEntity));
-        assertThrows(BadRequestException.class,() ->{
+        assertThrows(NotAllowedException.class,() ->{
             tagService.saveTag(tagDtoForCreate,userEntity);
         });
     }

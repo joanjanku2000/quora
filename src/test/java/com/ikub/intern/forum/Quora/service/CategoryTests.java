@@ -38,12 +38,9 @@ public class CategoryTests {
     @Test
     @DisplayName("Saving category ")
     void saveCategory(){
-
-        UserEntity userEntity = new UserEntity("test","test","test",
-                "m","usernameTest",
-                LocalDate.ofYearDay(2000,23),
-                LocalDateTime.of(2021, 3, 1,12,1),
-                "user",true);
+        Instantiators instantiators
+                 = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
         CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("name"); ;
         when(categoryRepo.findByCategoryName(categoryCreateRequest.getName()))
                 .thenReturn(null);
@@ -53,11 +50,9 @@ public class CategoryTests {
     @Test
     @DisplayName("Saving category fail")
     void saveCategoryFailCategoryExists(){
-        UserEntity userEntity = new UserEntity("test","test","test",
-                "m","usernameTest",
-                LocalDate.ofYearDay(2000,23),
-                LocalDateTime.of(2021, 3, 1,12,1),
-                "user",true);
+        Instantiators instantiators
+                = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
         CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("name"); ;
         CategoryEntity categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,userEntity);
         when(categoryRepo.findByCategoryName(categoryCreateRequest.getName()))
@@ -70,11 +65,9 @@ public class CategoryTests {
     @DisplayName("Get by id success")
     void findById(){
         Long id = 1L;
-        UserEntity userEntity = new UserEntity("test","test","test",
-                "m","usernameTest",
-                LocalDate.ofYearDay(2000,23),
-                LocalDateTime.of(2021, 3, 1,12,1),
-                "user",true);
+        Instantiators instantiators
+                = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
         CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("name"); ;
         CategoryEntity categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,userEntity);
         Optional<CategoryEntity> categoryEntityOptional = Optional.of(categoryEntity);
@@ -96,11 +89,9 @@ public class CategoryTests {
     @Test
     @DisplayName("Find all test")
     void findAll(){
-        UserEntity userEntity = new UserEntity("test","test","test",
-                "m","usernameTest",
-                LocalDate.ofYearDay(2000,23),
-                LocalDateTime.of(2021, 3, 1,12,1),
-                "user",true);
+        Instantiators instantiators
+                = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
         List<CategoryEntity> categoryEntityList = Arrays.asList(
                 new CategoryEntity(1L,"name",userEntity,LocalDateTime.of(2021,2,3,4,5),true),
                 new CategoryEntity(2L,"name2",userEntity,LocalDateTime.of(2021,2,3,4,5),true)
@@ -114,11 +105,9 @@ public class CategoryTests {
     @DisplayName("Delete Success ")
     void delete(){
         Long id = 1L;
-        UserEntity userEntity = new UserEntity("test","test","test",
-                "m","usernameTest",
-                LocalDate.ofYearDay(2000,23),
-                LocalDateTime.of(2021, 3, 1,12,1),
-                "user",true);
+        Instantiators instantiators
+                = new Instantiators();
+        UserEntity userEntity = instantiators.getUser();
         CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("name"); ;
         CategoryEntity categoryEntity = CategoryConverter.toEntity(categoryCreateRequest,userEntity);
         Optional<CategoryEntity> categoryEntityOptional = Optional.of(categoryEntity);
