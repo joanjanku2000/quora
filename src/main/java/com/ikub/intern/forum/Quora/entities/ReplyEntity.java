@@ -41,7 +41,6 @@ public class ReplyEntity {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "reply", fetch = FetchType.EAGER)
-   // @Where(clause = "active=true")
     private Set<UpvotesReply> upvotesReplyList;
 
     public ReplyEntity(UserEntity user, QuestionEntity question,
