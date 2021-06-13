@@ -12,10 +12,8 @@ import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
 import com.ikub.intern.forum.Quora.exceptions.NotFoundException;
 import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
 import com.ikub.intern.forum.Quora.repository.ReplyRepo;
-import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
 import com.ikub.intern.forum.Quora.utils.PageParams;
-import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 
 @Service

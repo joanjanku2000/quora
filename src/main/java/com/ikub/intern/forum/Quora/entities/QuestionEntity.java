@@ -1,14 +1,31 @@
 package com.ikub.intern.forum.Quora.entities;
 
+import com.ikub.intern.forum.Quora.dto.question.MostUpvotedQuestions;
+import com.ikub.intern.forum.Quora.utils.NativeQueries;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.lang.annotation.Native;
 import java.time.LocalDateTime;
 import java.util.Set;
-
+@SqlResultSetMapping(
+        name = "mostUpvotedQuestions",
+        classes = @ConstructorResult(
+                targetClass = MostUpvotedQuestions.class,
+                columns = {
+                        @ColumnResult(name="question"),
+                        @ColumnResult(name="total_upvotes")
+                }
+        )
+)
+@NamedNativeQuery(
+        name="MOST_UPVOTED_QUESTIONS",
+        query = NativeQueries.MOST_UPVOTED_QUESTIONS_OF_USER,
+        resultSetMapping = "mostUpvotedQuestions"
+)
 @Entity
 @Table(name = "question")
 @Getter

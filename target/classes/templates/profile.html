@@ -38,7 +38,11 @@
   </script>
   <style rel="stylesheet">
   #pfp{
-   margin-right:-10px
+    margin-right:-10px;
+    border: solid 3px red;
+    border-radius: 2px;
+    padding: 5px;
+    background-color: lightblue;
   }
     th {
      width:200px
@@ -109,9 +113,12 @@
   </table>
   </div>
     <div class="col-sm-4" >
-      <label>Profile Picture</label>
-      <br>
-      <img th:src="${picture}" alt="profile pic" id="pfp">
+      <div class="card" style="width: 10rem;">
+        <img class="card-img-top" th:src="${picture}" alt="profile pic">
+        <div class="card-body">
+          <h5 class="card-title">Profile</h5>
+        </div>
+      </div>
     </div>
   </div>
 </div>

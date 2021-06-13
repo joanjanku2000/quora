@@ -1,5 +1,6 @@
 package com.ikub.intern.forum.Quora.controller;
 
+import com.ikub.intern.forum.Quora.dto.question.MostUpvotedQuestions;
 import com.ikub.intern.forum.Quora.dto.question.QuestionCreateRequest;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
 import com.ikub.intern.forum.Quora.dto.question.QuestionUpdateRequest;
@@ -122,6 +123,13 @@ public class QuestionController {
         map.addAttribute("loggedUser", loggedUser);
         map.addAttribute("groupRequests",groupRequests);
         return "group_page::questions";
+    }
+
+    @GetMapping("/most-upvoted")
+    @ResponseBody
+    public List<MostUpvotedQuestions> findMostUpvotedOfUser(HttpSession httpSession){
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
+        return questionService.findAllOfUser(loggedUser.getId());
     }
 
 }

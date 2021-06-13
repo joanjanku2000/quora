@@ -7,8 +7,7 @@ import com.ikub.intern.forum.Quora.entities.*;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
 import com.ikub.intern.forum.Quora.exceptions.NotFoundException;
 import com.ikub.intern.forum.Quora.repository.CategoryRepo;
-import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
-import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
+import com.ikub.intern.forum.Quora.repository.UserReportsRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
 
 
@@ -23,9 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 
 import java.util.Optional;
@@ -36,7 +32,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class GroupTests {
     @Mock
-    private UserGroupRepo groupRepo;
+    private UserReportsRepo groupRepo;
     @Mock
     private CategoryRepo categoryRepo;
     @Mock

@@ -3,6 +3,8 @@ package com.ikub.intern.forum.Quora.service;
 import com.ikub.intern.forum.Quora.converter.GroupConverter;
 import com.ikub.intern.forum.Quora.dto.group.GroupDto;
 import com.ikub.intern.forum.Quora.dto.group.GroupDtoForCreateUpdate;
+import com.ikub.intern.forum.Quora.dto.group.GroupWithMostAskedQuestion;
+import com.ikub.intern.forum.Quora.dto.user.MostActiveUsersInGroup;
 import com.ikub.intern.forum.Quora.entities.CategoryEntity;
 import com.ikub.intern.forum.Quora.entities.QuestionEntity;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
@@ -11,7 +13,8 @@ import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
 import com.ikub.intern.forum.Quora.exceptions.NotFoundException;
 import com.ikub.intern.forum.Quora.repository.CategoryRepo;
 import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
-import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
+import com.ikub.intern.forum.Quora.repository.ReportsRepo;
+import com.ikub.intern.forum.Quora.repository.UserReportsRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
 import com.ikub.intern.forum.Quora.utils.Filter;
 import com.ikub.intern.forum.Quora.utils.PageParams;
@@ -27,14 +30,15 @@ import java.util.Optional;
 @Service
 public class GroupService {
     @Autowired
-    private UserGroupRepo groupRepo;
+    private UserReportsRepo groupRepo;
     @Autowired
     private CategoryRepo categoryRepo;
     @Autowired
     private UserRepo userRepo;
     @Autowired
     private QuestionsRepo questionRepo;
-
+    @Autowired
+    private ReportsRepo reportsRepo;
     @Transactional
     public void createGroup(Long adminId,GroupDtoForCreateUpdate groupDtoForCreate){
         Optional<CategoryEntity> categoryEntity = categoryRepo
@@ -105,7 +109,8 @@ public class GroupService {
         if (!pageParams.isValid()){
             throw new BadRequestException("Please enter the correct arguments");
         }
-       if ((filter.getCategory()==null || filter.getCategory().isEmpty()) && (filter.getName()==null || filter.getName().isEmpty()) )
+       if ((filter.getCategory()==null || filter.getCategory().isEmpty()) && (filter.getName()==null
+               || filter.getName().isEmpty()) )
         return GroupConverter.entityPageToDtoPage(
                 groupRepo.findAll(PageRequest.of(
                 Integer.parseInt(pageParams.getPageNumber()),
@@ -131,5 +136,17 @@ public class GroupService {
                                    pageParams.getSortField())));
 
     }
+    public List<GroupWithMostAskedQuestion> findGroupsWithMostAskedQuestions(Long uid){
+        if (!userRepo.findById(uid).isPresent()){
+            throw new NotFoundException("User not found");
+        }
+        return reportsRepo.findGroupsWithMostAskedQuestions(uid);
+    }
 
+    public List<MostActiveUsersInGroup> findMostActiveUsersInGroup(Long groupId){
+        if (!groupRepo.findById(groupId).isPresent()){
+            throw new NotFoundException("Group not found");
+        }
+        return reportsRepo.findMostActiveUsersInGroupList(groupId);
+    }
 }

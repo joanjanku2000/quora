@@ -4,7 +4,9 @@ import com.ikub.intern.forum.Quora.converter.GroupConverter;
 import com.ikub.intern.forum.Quora.dto.category.CategoryDto;
 import com.ikub.intern.forum.Quora.dto.group.GroupDto;
 import com.ikub.intern.forum.Quora.dto.group.GroupDtoForCreateUpdate;
+import com.ikub.intern.forum.Quora.dto.group.GroupWithMostAskedQuestion;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
+import com.ikub.intern.forum.Quora.dto.user.MostActiveUsersInGroup;
 import com.ikub.intern.forum.Quora.dto.user.UserDto;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.entities.UserGroupEntity;
@@ -12,6 +14,7 @@ import com.ikub.intern.forum.Quora.service.*;
 import com.ikub.intern.forum.Quora.utils.Filter;
 import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -134,5 +137,18 @@ public class GroupController {
         UserDto loggedUser = (UserDto) httpSession.getAttribute("loggedUser");
         groupService.createGroup(loggedUser.getId(), groupDto);
         return new ModelAndView("redirect:/users/groups", map);
+    }
+
+    @GetMapping("/most-asked-questions")
+    @ResponseBody
+    public List<GroupWithMostAskedQuestion> getGroupsWithMostAskedQuestions(HttpSession httpSession){
+        UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
+        return groupService.findGroupsWithMostAskedQuestions(loggedUser.getId());
+    }
+
+    @GetMapping("/most-active-users")
+    @ResponseBody
+    public List<MostActiveUsersInGroup> getMostActiveUsers(HttpSession httpSession,@RequestParam Long gid){
+        return groupService.findMostActiveUsersInGroup(gid);
     }
 }

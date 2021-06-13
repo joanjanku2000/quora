@@ -1,6 +1,7 @@
 package com.ikub.intern.forum.Quora.service;
 
 import com.ikub.intern.forum.Quora.converter.QuestionConverter;
+import com.ikub.intern.forum.Quora.dto.question.MostUpvotedQuestions;
 import com.ikub.intern.forum.Quora.dto.question.QuestionCreateRequest;
 import com.ikub.intern.forum.Quora.dto.question.QuestionDto;
 import com.ikub.intern.forum.Quora.dto.question.QuestionUpdateRequest;
@@ -9,10 +10,10 @@ import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
 import com.ikub.intern.forum.Quora.exceptions.NotAllowedException;
 import com.ikub.intern.forum.Quora.exceptions.NotFoundException;
 import com.ikub.intern.forum.Quora.repository.QuestionsRepo;
+import com.ikub.intern.forum.Quora.repository.ReportsRepo;
 import com.ikub.intern.forum.Quora.repository.TagRepo;
-import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
+import com.ikub.intern.forum.Quora.repository.UserReportsRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
-import com.ikub.intern.forum.Quora.utils.LoggedUserUtil;
 import com.ikub.intern.forum.Quora.utils.PageParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,12 @@ public class QuestionService {
     @Autowired
     private UserRepo userRepo;
     @Autowired
-    private UserGroupRepo groupRepo;
+    private UserReportsRepo groupRepo;
     @Autowired
     private TagRepo tagRepo;
+    @Autowired
+    private ReportsRepo reportsRepo;
+
     private static final Logger logger = LoggerFactory.getLogger(QuestionService.class);
 
     public QuestionEntity newQuestion(QuestionCreateRequest questionCreateRequest){
@@ -137,6 +141,14 @@ public class QuestionService {
         questionEntity.get().setUpdatedAt(LocalDateTime.now());
         logger.info("Updated question to {} ",questionEntity.get().getQuestion());
         questionsRepo.save(questionEntity.get());
+    }
+
+    public List<MostUpvotedQuestions> findAllOfUser(Long uid){
+        Optional<UserEntity> userEntity = userRepo.findById(uid);
+        if (!userEntity.isPresent()){
+            throw new NotFoundException("USer not found");
+        }
+        return reportsRepo.findMostUpvotedQuestionsOfUser(uid);
     }
 
 }

@@ -8,7 +8,7 @@ import com.ikub.intern.forum.Quora.dto.user.*;
 import com.ikub.intern.forum.Quora.entities.UserEntity;
 import com.ikub.intern.forum.Quora.entities.UserGroupEntity;
 import com.ikub.intern.forum.Quora.exceptions.BadRequestException;
-import com.ikub.intern.forum.Quora.repository.UserGroupRepo;
+import com.ikub.intern.forum.Quora.repository.UserReportsRepo;
 import com.ikub.intern.forum.Quora.repository.users.UserRepo;
 //import com.ikub.intern.forum.Quora.security.CustomOAuth2User;
 import com.ikub.intern.forum.Quora.security.oauth.CustomOauth2User;
@@ -29,7 +29,7 @@ public class UserService  {
     @Autowired
     private UserRepo userRepo;
     @Autowired
-    private UserGroupRepo groupRepo;
+    private UserReportsRepo groupRepo;
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -154,4 +154,6 @@ public class UserService  {
         }
         return userRepo.feed(uid, PageRequest.of(Integer.parseInt(params.getPageNumber()), Integer.parseInt(params.getPageSize())));
     }
+
+
 }

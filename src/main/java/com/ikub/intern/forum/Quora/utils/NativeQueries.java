@@ -30,5 +30,28 @@ public class NativeQueries {
             "where users.id = ?1 and user_group.active = true and " +
             "user_group_connection.active=true and question.active=true " +
             "order by question.date desc";
+    public static final String MOST_UPVOTED_QUESTIONS_OF_USER =
+            "select question.question , count(question.question) as total_upvotes from question " +
+                    "inner join users on question.id_user = users.id " +
+                    "inner join upvotes_question on upvotes_question.id_question=question.id " +
+                    "where question.active = true and upvotes_question.active=true and users.id = ?1 " +
+                    "group by question.question " +
+                    "order by total_upvotes desc";
+
+    public static final String GROUP_WHERE_ASKED_MOST_QUESTIONS =
+            " select user_group.group_name, count(question.question) as total_questions  from question " +
+                    "inner join users on question.id_user = users.id " +
+                    "inner join user_group on user_group.id = question.id_group " +
+                    "where question.active = true and user_group.active= true and users.id = ?1 " +
+                    "group by user_group.group_name " +
+                    "order by total_questions desc ";
+
+    public static final String MOST_ACTIVE_USERS_IN_GROUP =
+            "select users.username, count(question.question) as total_questions  from question " +
+                    "inner join users on question.id_user = users.id " +
+                    "inner join user_group on user_group.id = question.id_group " +
+                    "where question.active = true and user_group.active= true and user_group.id= ?1 " +
+                    "group by users.username,user_group.group_name " +
+                    "order by total_questions desc";
 
 }
