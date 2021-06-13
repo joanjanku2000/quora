@@ -48,7 +48,6 @@ public class CategoryController {
             model.addAttribute("error","Cannot add duplicate category");
             return "all_categories::categories";
         }
-
         model.addAttribute("page",categoryEntityList);
         return "all_categories::categories";
     }
@@ -64,9 +63,11 @@ public class CategoryController {
 
 
     @GetMapping("/{id}")
+    @ResponseBody
     public CategoryDto findById(@PathVariable Long id){
         return categoryService.findById(id);
     }
+
     @DeleteMapping("/{id}")
     public void deleteCategory(@PathVariable Long id){
         categoryService.deleteCategory(id);

@@ -160,8 +160,14 @@ public class UserController {
             UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
             List<UserGroup> userGroupRequests
                     = userService.findUserJoinRequests(loggedUser.getId());
+            Authentication authentication
+                    = SecurityContextHolder.getContext().getAuthentication();
+            CustomOauth2User principal
+                    = (CustomOauth2User) authentication.getPrincipal();
+            String profileSource = principal.getAttribute("picture");
             model.addAttribute("user", loggedUser);
             model.addAttribute("requests", userGroupRequests);
+            model.addAttribute("picture",profileSource);
             return "profile";
         }
         return "login";
@@ -173,9 +179,10 @@ public class UserController {
                 = SecurityContextHolder.getContext().getAuthentication();
         CustomOauth2User principal
                 = (CustomOauth2User) authentication.getPrincipal();
-
+        String profileSource = (String) principal.getAttribute("picture");
         ModelAndView modelAndView
                 = new ModelAndView("profile");
+
         UserDto userDto
                 = UserConverter.entityToDto(userService.findByEmail(principal.getEmail()));
 
@@ -185,7 +192,7 @@ public class UserController {
                 = userService.findUserJoinRequests(userDto.getId());
         modelAndView.addObject("user", userDto);
         modelAndView.addObject("requests", userGroupRequests);
-
+        modelAndView.addObject("picture",profileSource);
         return modelAndView;
     }
 

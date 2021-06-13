@@ -36,6 +36,17 @@
       });
     }
   </script>
+  <style rel="stylesheet">
+  #pfp{
+   margin-right:-10px
+  }
+    th {
+     width:200px
+    }
+    td {
+    width:180px
+    }
+  </style>
 </head>
 <body>
 <nav class="stroke" style="font-weight: bolder;">
@@ -61,36 +72,50 @@
     <li class="nav-item" id="signout">
       <a class="nav-link" href="http://localhost:8081/users/logout">Sign Out</a>
     </li>
-
   </ul>
 </nav>
 <div class="container">
-  <h2>User Details</h2>
-  <table class="table">
 
-    <thead class="thead-dark">
+  <div class="row">
+    <h2 class="justify-content-center">User Details</h2>
+  <div class="col-sm-8" id="table">
+  <table class="table">
+    <thead class="thead">
     <tr>
       <th>First Name</th>
-      <th>Last Name</th>
-      <th>Email</th>
-      <th>Username</th>
-      <th>Birthday</th>
-      <th>Gender</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
       <td th:utext="${user.firstName}"></td>
+    </tr>
+    <tr>
+      <th>Last Name</th>
       <td th:utext="${user.lastName}" ></td>
+    </tr>
+    <tr>
+      <th>Email</th>
       <td th:utext="${user.email}"></td>
+    </tr>
+    <tr>
+      <th>Username</th>
       <td th:utext="${user.username}" ></td>
+      </tr>
+    <tr>
+      <th>Birthday</th>
       <td th:utext="${user.birthday}" ></td>
+      </tr>
+    <tr>
+      <th>Gender</th>
       <td th:utext="${user.gender}"></td>
     </tr>
-    </tbody>
+    </thead>
   </table>
+  </div>
+    <div class="col-sm-4" >
+      <label>Profile Picture</label>
+      <br>
+      <img th:src="${picture}" alt="profile pic" id="pfp">
+    </div>
+  </div>
 </div>
-<div  class="container">
+<div  class="container" id="update">
   <a th:href="@{/users/update}" class="btn btn-outline-danger">Update your information</a>
 </div>
 <br>
