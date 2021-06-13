@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Proxy(lazy = false)
 @Table(name = "users")
 @Where(clause = "active=true") //soft deletion handling
 @Getter
@@ -65,7 +64,6 @@ import java.time.LocalDateTime;
                 @NamedNativeQuery(
                         name = "UserReqs",
                         query = NativeQueries.USER_REQUESTS_NATIVE_QUERY,
-
                         resultSetMapping = "UserRequests"),
                 @NamedNativeQuery(
                         name = "user_group",
@@ -82,48 +80,34 @@ public class UserEntity {
     private Long id;
 
     @Column
-    @NotNull
-    @NotBlank
     private String firstName;
 
     @Column
-    @NotNull
-    @NotBlank
     private String lastName;
 
     @Column
-    @NotNull
-    @NotBlank
     private String email;
 
     @Column
-    @NotNull
-    @NotBlank
     private String gender;
 
     @Column
-    @NotNull
-    @NotBlank
     private String username;
 
     @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotBlank
     private LocalDate birthday;
 
     @Column
     private LocalDateTime createdAt;
 
     @Column
-    @NotBlank
     private LocalDateTime updatedAt;
 
     @Column
-    @NotNull
     private String userRole;
 
     @Column
-    @NotNull
     private boolean active;
 
     public UserEntity(String firstName, String lastName, String email, String gender, String username, LocalDate birthday, LocalDateTime createdAt, String userRole, boolean active) {

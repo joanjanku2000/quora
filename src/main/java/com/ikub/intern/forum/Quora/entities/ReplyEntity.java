@@ -1,20 +1,16 @@
 package com.ikub.intern.forum.Quora.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
-import org.hibernate.validator.internal.util.privilegedactions.LoadClass;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name="reply")
+@Table(name = "reply")
 @Where(clause = "active=true")
 @NoArgsConstructor
 @Getter
@@ -28,11 +24,11 @@ public class ReplyEntity {
     private String reply;
 
     @ManyToOne
-    @JoinColumn(name = "id_user",referencedColumnName = "id")
+    @JoinColumn(name = "id_user", referencedColumnName = "id")
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name="id_question",referencedColumnName = "id")
+    @JoinColumn(name = "id_question", referencedColumnName = "id")
     private QuestionEntity question;
 
     @Column
@@ -44,8 +40,8 @@ public class ReplyEntity {
     @Column
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "reply",fetch = FetchType.EAGER)
-    @Where(clause = "active=true")
+    @OneToMany(mappedBy = "reply", fetch = FetchType.EAGER)
+   // @Where(clause = "active=true")
     private Set<UpvotesReply> upvotesReplyList;
 
     public ReplyEntity(UserEntity user, QuestionEntity question,

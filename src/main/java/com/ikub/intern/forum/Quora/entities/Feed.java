@@ -27,7 +27,8 @@ public class Feed {
     private LocalDateTime date;
     private BigInteger count;
 
-    public Feed(Integer questionId, String groupName, String question, LocalDateTime date, BigInteger numberOfUpvotes) {
+    public Feed(Integer questionId, String groupName, String question,
+                LocalDateTime date, BigInteger numberOfUpvotes) {
         this.id = questionId;
         this.groupName = groupName;
         this.question = question;

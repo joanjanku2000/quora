@@ -30,7 +30,8 @@ public class CategoryController {
     private UserService userService;
 
     @PostMapping("/save")
-    public String saveCategory(@RequestBody CategoryCreateRequest categoryCreateRequest, Model model, HttpSession httpSession){
+    public String saveCategory(@RequestBody CategoryCreateRequest categoryCreateRequest,
+                               Model model, HttpSession httpSession){
         UserDto loggedUser = LoggedUserUtil.getLoggedUserDto(httpSession);
         UserEntity createdBy = userService.find(loggedUser.getId());
         List<CategoryDto> categoryEntityList;

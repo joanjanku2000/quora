@@ -12,8 +12,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 public class OAuthSecurityConfiguration extends WebSecurityConfigurerAdapter  {
     @Autowired
     private CustomOauth2UserService customOauth2UserService;
-    @Autowired
-    ClientRegistrationRepository clientRegistrationRepository;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -21,16 +20,12 @@ public class OAuthSecurityConfiguration extends WebSecurityConfigurerAdapter  {
                     .authorizeRequests()
                     .antMatchers("/oauth2/authorization/google").permitAll()
                     .antMatchers("/users/login").permitAll()
-                    .antMatchers("/static/bcg.jpg").permitAll()
                     .antMatchers("/**").authenticated()
-                    .antMatchers("/category/save").hasRole("admin")
                     .and()
                     .oauth2Login()
                     .defaultSuccessUrl("/users/postlogin",true)
                     .loginPage("/users/login")
                     .userInfoEndpoint().userService(customOauth2UserService);
-
-            //http.csrf().disable();
     }
 
 

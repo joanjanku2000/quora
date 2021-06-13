@@ -90,7 +90,7 @@ public class QuestionService {
         pageParams.setSortField("date");
         logger.info("Finding all questions in group {} ",userGroupEntity.get().getGroupName());
         return QuestionConverter.entityPageToDtoPage(questionsRepo.findAllByGroupId(id,
-                PageRequest.of( Integer.valueOf(pageParams.getPageNumber()), Integer.valueOf(pageParams.getPageSize())
+                PageRequest.of( Integer.parseInt(pageParams.getPageNumber()), Integer.parseInt(pageParams.getPageSize())
                 ,pageParams.getSort(),pageParams.getSortField())));
     }
     private boolean userIsPartOfTheGroup(UserEntity user, UserGroupEntity groupEntity){

@@ -19,7 +19,9 @@ import java.util.Optional;
 public class CategoryService {
     @Autowired
     private CategoryRepo categoryRepo;
+
     private static final Logger logger = LoggerFactory.getLogger(CategoryService.class);
+
     public void saveCategory(CategoryCreateRequest categoryCreateRequest, UserEntity createdBy) {
         logger.info("Saving category {}",categoryCreateRequest);
         CategoryEntity categoryEntity ;

@@ -56,7 +56,6 @@ public class QuestionEntity {
     private Set<UpvotesQuestion> upvotesQuestion;
 
     @OneToMany(mappedBy = "question", fetch = FetchType.EAGER)
-    @Where(clause = "active=true")
     private Set<ReplyEntity> replies;
 
     public QuestionEntity(String question, UserEntity user, UserGroupEntity group,

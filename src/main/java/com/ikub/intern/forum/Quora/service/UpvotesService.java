@@ -113,7 +113,7 @@ public class UpvotesService {
         if (!questionEntity.isPresent()){
             throw new BadRequestException("Question does not exist");
         }
-        logger.info("Finding upvotes of {} "+questionEntity);
+        logger.info("Finding upvotes of {} ",questionEntity);
         return questionUpvotesRepo.findAllByQuestionId(id);
     }
     public List<UpvotesReply>  getUpvotesOfReply(Long id){

@@ -35,7 +35,7 @@ public class GroupConverter {
     }
 
     public static Page<GroupDto> entityPageToDtoPage(Page<UserGroupEntity> userEntities) {
-        Page<GroupDto> page = userEntities.map(
+        return userEntities.map(
                 new Function<UserGroupEntity, GroupDto>() {
                     @Override
                     public GroupDto apply(UserGroupEntity userGroupEntity) {
@@ -43,7 +43,6 @@ public class GroupConverter {
                     }
                 }
         );
-        return page;
     }
 
 
