@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <script rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css">
+    <style>
+        .login_form_wrapper {
+            float: left;
+            width: 100%;
+            padding-top: 122px;
+            padding-left: 0px;
+            padding-bottom: 100px;
+        }
+
+        .login_wrapper {
+            padding-top: 100px;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+
+            float: left;
+            width: 100%;
+            background: none;
+            padding: 50px
+        }
+
+        .login_wrapper a.btn {
+            color: #fff;
+            width: 100%;
+            height: 50px;
+            padding: 6px 25px;
+            line-height: 36px;
+            margin-bottom: 20px;
+            text-align: left;
+            border-radius: 5px;
+            background: #4385f5;
+            font-size: 16px;
+            border: 1px solid #4385f5
+        }
+
+        .login_wrapper a i {
+            float: right;
+            margin: 0;
+            line-height: 35px
+        }
+
+        .login_wrapper a.google-plus {
+            background: #db4c3e;
+            border: 1px solid #db4c3e
+        }
+
+        .login_wrapper h2 {
+            font-size: 18px;
+            color: whitesmoke;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #111;
+            line-height: 20px;
+            text-transform: uppercase;
+            text-align: center;
+            position: relative
+        }
+
+        .login_wrapper .formsix-pos,
+        .formsix-e {
+            position: relative
+        }
+
+        .form-group {
+            margin-bottom: 15px
+        }
+
+        .login_wrapper .form-control {
+            height: 53px;
+            padding: 15px 20px;
+            font-size: 14px;
+            line-height: 24px;
+            border: 1px solid #fafafa;
+            border-radius: 3px;
+            box-shadow: white;
+            font-family: 'Roboto';
+            -webkit-transition: all 0.3s ease 0s;
+            -moz-transition: all 0.3s ease 0s;
+            -o-transition: all 0.3s ease 0s;
+            transition: all 0.3s ease 0s;
+            background-color: #fafafa
+        }
+
+        .login_btn_wrapper a {
+            text-align: center;
+            text-transform: uppercase
+        }
+
+        .login_message p {
+            text-align: center;
+            font-size: 16px;
+            margin: 0
+        }
+
+        p {
+            color: #999999;
+            font-size: 14px;
+            line-height: 24px
+        }
+
+        .login_wrapper a.login_btn:hover {
+            background-color: #2c6ad4;
+            border-color: #2c6ad4
+        }
+
+        .login_wrapper a.btn:hover {
+            background-color: #2c6ad4;
+            border-color: #2c6ad4
+        }
+
+        .login_wrapper a.google-plus:hover {
+            background: #bd4033;
+            border-color: #bd4033
+        }
+        body{
+            background-image: url("../static/bcg.jpg");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        h1{
+            color: aquamarine;
+            size: auto;
+            margin-right: 0px;
+            border-bottom: 1px dotted white;
+            border-radius: 20px;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container">
+<div class="login_form_wrapper">
+    <h1 >Welcome to Our Question's Forum</h1>
+    <p>Please log-in to continue...</p>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <!-- login_wrapper -->
+                <div class="login_wrapper">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-xs-12 col-sm-6"> <a th:href="@{/oauth2/authorization/google}" class="btn btn-primary google-plus">
+                            Login with Google <i class="fa fa-google-plus"></i> </a> </div>
+                    </div>
+                </div> <!-- /.login_wrapper-->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

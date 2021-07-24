@@ -1,0 +1,304 @@
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Categories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href=" https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles/profile.css">
+    <script th:inline="javascript">
+        requestToJoin = function(groupId){
+            let token = $('#_csrf').attr('content');
+            let header = $('#_csrf_header').attr('content');
+
+            let currentUrlString = window.location.href;
+            let currentUrl = new URL(currentUrlString);
+            let pageSize =  10;
+            let pageNumber = 0;
+            let sortField = "groupName";
+            if (currentUrlString.indexOf("pageSize")>-1)
+            {
+                pageSize = currentUrl.searchParams.get("pageSize");
+            }
+            if (currentUrlString.indexOf("pageNumber")>-1)
+            {
+                pageNumber = currentUrl.searchParams.get("pageNumber");
+            }
+            if (currentUrlString.indexOf("sortField")>-1)
+            {
+                sortField = currentUrl.searchParams.get("sortField");
+            }
+            let category = "";
+            if (currentUrlString.indexOf("category")>-1){
+                category = currentUrl.searchParams.get("category");
+            }
+            let urlToGo = "http://localhost:8081/users/group/"+groupId+"?pageNumber="+pageNumber+"&pageSize="+pageSize+"&sortField="+sortField;
+            if (category!==""){
+                urlToGo =  urlToGo+"&category="+category;
+            }
+            let settings = {
+                beforeSend: function(xhr,options)
+                {
+                    xhr.setRequestHeader(header,token)
+                    xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+                },
+                type:'post',
+                url:urlToGo
+            }
+
+            $.ajax(settings).done(function(result){
+                $('#groups').html(result);
+            });
+        }
+        leaveGroup = function(groupId){
+            let token = $('#_csrf').attr('content');
+            let header = $('#_csrf_header').attr('content');
+
+            let currentUrlString = window.location.href;
+            let currentUrl = new URL(currentUrlString);
+            let pageSize =  10;
+            let pageNumber = 0;
+            let sortField = "groupName";
+            let category = "";
+            if (currentUrlString.indexOf("pageSize")>-1)
+            {
+                pageSize = currentUrl.searchParams.get("pageSize");
+            }
+            if (currentUrlString.indexOf("pageNumber")>-1)
+            {
+                pageNumber = currentUrl.searchParams.get("pageNumber");
+            }
+            if (currentUrlString.indexOf("sortField")>-1)
+            {
+                sortField = currentUrl.searchParams.get("sortField");
+            }
+            if (currentUrlString.indexOf("category")>-1){
+                category = currentUrl.searchParams.get("category");
+            }
+            let urlToGo = "http://localhost:8081/users/delete/membership/"+groupId+"?pageNumber="+pageNumber+"&pageSize="+pageSize+"&sortField="+sortField;
+            if (category!==""){
+                urlToGo =  "http://localhost:8081/users/delete/membership/"+groupId+"?pageNumber="+pageNumber+"&pageSize="+pageSize+"&sortField="+sortField+"&category="+category;
+            }
+            let settings = {
+                beforeSend: function(xhr,options)
+                {
+                    xhr.setRequestHeader(header,token);
+                    xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+                },
+                type:'DELETE',
+                url:urlToGo,
+            }
+
+            $.ajax(settings).done(function(result){
+                $('#groups').html(result);
+                $('.modal-backdrop').remove();
+            });
+        }
+        let chooseCategory = () =>{
+
+            let chosenC = document.getElementById("category").value;
+            let currentUrlString = window.location.href;
+            if (chosenC!=="all")
+            window.location.replace("http://localhost:8081/groups/all?pageNumber=0&sortField=groupName"+"&category="+chosenC);
+            else
+                window.location.replace("http://localhost:8081/groups/all?pageNumber=0&sortField=groupName");
+        }
+        let search = () => {
+            let token = $('#_csrf').attr('content');
+            let header = $('#_csrf_header').attr('content');
+
+            let name = document.getElementById("name").value;
+            let currentUrlString = window.location.href;
+            let currentUrl = new URL(currentUrlString);
+            let pageSize =  10;
+            let pageNumber = 0;
+            let sortField = "groupName";
+            if (currentUrlString.indexOf("pageSize")>-1)
+            {
+                pageSize = currentUrl.searchParams.get("pageSize");
+            }
+            if (currentUrlString.indexOf("pageNumber")>-1)
+            {
+                pageNumber = currentUrl.searchParams.get("pageNumber");
+            }
+            if (currentUrlString.indexOf("sortField")>-1)
+            {
+                sortField = currentUrl.searchParams.get("sortField");
+            }
+
+            let urlToGo = "http://localhost:8081/groups/find?pageNumber="+0
+                +"&pageSize="+pageSize+"&sortField="+sortField+"&name="+name;
+
+            let settings = {
+                beforeSend: function(xhr,options)
+                {
+                    xhr.setRequestHeader(header,token);
+                    xhr.setRequestHeader("content-type" ,"application/json; charset=utf-8");
+                },
+                type:'GET',
+                url:urlToGo,
+            }
+            $.ajax(settings).done(function(result){
+                $('#groups').html(result);
+            });
+        }
+    </script>
+</head>
+<body>
+<nav class="stroke" style="font-weight: bolder;">
+    <ul class="nav justify-content-center">
+        <li class="nav-item" id="home">
+            <a class="nav-link " aria-current="page" th:href="@{/users/groups}" > My Groups</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="http://localhost:8081/users/profile" tabindex="-1">Profile</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:8081/users/feed?pageNumber=0" tabindex="-1">Feed</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="http://localhost:8081/groups/all?sortField=groupName&pageNumber=0" tabindex="-1">Discover Groups</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="http://localhost:8081/tags" tabindex="-1">Tags</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="http://localhost:8081/category" tabindex="-1">Categories</a>
+        </li>
+        <li class="nav-item" id="signout">
+            <a class="nav-link" href="http://localhost:8081/users/logout">Sign Out</a>
+        </li>
+
+    </ul>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 card"  style="width: 5rem; height: 5rem;">
+            <table class="card-body">
+              <tr>
+                  <td>
+                        <tr>
+                                <td class="card-title">
+                                    <h4 th:text="${loggedUser.username}">un</h4>
+                                </td>
+                         </tr>
+                         <tr>
+                                <td th:text="${loggedUser.getUserRole()}" class="lead"></td>
+                         </tr>
+                  </td>
+
+              </tr>
+            </table>
+            <hr>
+            <form>
+                <label class="text-muted">Find groups in category</label>
+                <select id="category" class="form-control col-md-6" onchange="chooseCategory()">
+                    <option>-</option>
+                    <option th:value="all">All</option>
+                    <div th:each="c : ${allCategories}">
+                        <option th:value="${c.categoryName}" th:text="${c.categoryName}"></option>
+                    </div>
+                </select>
+            </form>
+                <br>
+                <label>Search:</label>
+                <input id="name" type="text" placeholder="Group name" class="form-control col-md-6" onchange="search()">
+
+        </div>
+
+        <div class="col-sm-8" id="groups" th:fragment="groups">
+            <table border="0">
+                <tbody>
+                <div th:each="group : ${groups}" class="card">
+                    <tr>
+                        <td>
+                           <tr>
+                                <td  class="card-title" >
+                                <h4>
+                                <a  th:text="${group.groupName}" th:href="@{/groups/{id}(id=${group.id},pageNumber=0)}"></a>
+                                </h4>
+                                </td>
+                                <td>
+                                    <button th:if="${group.userIsPartOfTheGroup(loggedUser.username)==false and groupRequests.contains(group.id)==false}" class="btn btn-info" style="border-radius: 2px" th:attr="onclick=|requestToJoin('${group.id}')|">Join</button>
+                                    <button th:if="${groupRequests.contains(group.id)==true and group.userIsAdmin(loggedUser.username)==false }" class="btn btn-info" style="border-radius: 2px" disabled>Join</button>
+                                    <button th:if="${group.userIsPartOfTheGroup(loggedUser.username)==true and group.userIsAdmin(loggedUser.username)==false and groupRequests.contains(group.id)==false}" class="btn btn-danger" style="border-radius: 2px" th:attr="data-target='#leaveGroup'+${group.id}" data-toggle="modal">Leave</button>
+                                </td>
+                           </tr>
+                            <tr class="text-muted" >
+                                <td th:text="${group.description}"></td>
+                            </tr>
+                            <tr class="text-muted">
+                                <td th:text="${group.categoryDto.categoryName}"></td>
+                            </tr>
+                        </td>
+                    </tr>
+                    <div class="modal fade" th:id="'leaveGroup'+${group.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content panel-warning">
+                                <div class="modal-header panel-heading">
+                                    <h4 class="modal-title">Leave Group</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <h4> Are you sure you want to leave the group ?</h4>
+                                    <p>Keep in mind.If you leave, you will never be able to join again</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-danger" th:attr="onclick=|leaveGroup('${group.id}')|" data-dismiss="modal">Leave</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </tbody>
+            </table>
+
+            <div  style="padding-bottom: 10px">
+                <table border="0">
+                    <div th:if = "${#httpServletRequest.getParameter('pageNumber') != null and #httpServletRequest.getParameter('sortField') !=null }">
+                        <p th:text="'Page '+${T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) + 1}
+                        + ' of '+${groups.totalPages}" class="h6"></p>
+                        <tr>
+                            <div th:unless="${groups.totalPages == 0}">
+                                <td th:each="i : ${#numbers.sequence(0,groups.totalPages - 1)}">
+                                    <div th:if = "${ T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) == i}" > |
+                                        <a th:text=" ${i + 1} "
+                                           th:href="@{/groups/all(pageNumber=${i},sortField=${#httpServletRequest.getParameter('sortField')})}"
+                                           style="font-size: larger;color: rebeccapurple;font-weight: bolder;" class="pageLink"></a> |
+                                    </div>
+                                    <div th:unless = "${ T(Integer).parseInt(#httpServletRequest.getParameter('pageNumber')) == i}" >
+                                        | <a th:text=" ${i + 1} "
+                                             th:href="@{/groups/all(pageNumber=${i},sortField=${#httpServletRequest.getParameter('sortField')})}"
+                                             style="font-size: larger;color: red; font-weight: bold;" class="pageLink" ></a> |
+                                    </div>
+                                </td>
+                            </div>
+                        </tr>
+                    </div>
+                </table>
+            </div>
+        </div>
+        </div>
+
+</div>
+</div>
+</div>
+</body>
+</html>
